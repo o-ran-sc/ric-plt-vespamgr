@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "621c50ef_eed9ccf6",
+        "filename": "Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "ONAP-VESPA is an existing 3rd party SW, which we use. We cannot copy the code to LF.\n\nVESPA (i.e. VES Agent) is the process, which collects the metrics from Prometheus in RIC and sends them to ONAP VES Collector.\nVespa manager is our own process, which we use to start-up VES Agent in the container. It will have more tasks later. I will update the README to have a better explanation about these components.",
+      "parentUuid": "6e16d909_883227c1",
+      "range": {
+        "startLine": 25,
+        "startChar": 32,
+        "endLine": 25,
+        "endChar": 42
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "a1bddbc4_03c5aec8",
         "filename": "Dockerfile",
         "patchSetId": 1
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "5db59735_5342eba7",
+        "filename": "Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "Vesmgr creates the configuration file for the VES Agent into this directory. I\u0027ll add an comment.",
+      "parentUuid": "c9d7420c_87ed7495",
+      "range": {
+        "startLine": 54,
+        "startChar": 0,
+        "endLine": 54,
+        "endChar": 2
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "b5947323_a6c81df5",
         "filename": "Dockerfile",
         "patchSetId": 1
@@ -82,6 +130,30 @@
       "writtenOn": "2019-08-15T09:46:16Z",
       "side": 1,
       "message": "You might consider using ENTRYPOINT instead of CMD here.",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 59,
+        "endChar": 4
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "26103ad4_d6712ab0",
+        "filename": "Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "We\u0027ll change it.",
+      "parentUuid": "b5947323_a6c81df5",
       "range": {
         "startLine": 59,
         "startChar": 0,
@@ -117,6 +189,30 @@
     },
     {
       "key": {
+        "uuid": "1c423eb4_24bbdcac",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "Yes. We\u0027ll update the README.",
+      "parentUuid": "ddac5e58_76aed6ac",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "441d56ce_50f64c21",
         "filename": "README.md",
         "patchSetId": 1
@@ -128,6 +224,30 @@
       "writtenOn": "2019-08-15T09:46:16Z",
       "side": 1,
       "message": "This seems very specific to a particular environment.  Also I\u0027m a little confused about the directions to push a DOCKER image to a HELM repository, I have never seen that done.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 1
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7c0ea2bf_a42e9f5b",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "These are internal testing instructions. We\u0027ll remove these.",
+      "parentUuid": "441d56ce_50f64c21",
       "range": {
         "startLine": 17,
         "startChar": 0,
@@ -186,6 +306,30 @@
     },
     {
       "key": {
+        "uuid": "6d938a53_b93f484c",
+        "filename": "ves-agent-chart/Chart.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "These are not the official RIC Helm charts. These are for internal testing.",
+      "parentUuid": "e6c50af0_cf38d627",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2b80ae93_243b6465",
         "filename": "ves-agent-chart/Chart.yaml",
         "patchSetId": 1
@@ -209,6 +353,30 @@
     },
     {
       "key": {
+        "uuid": "57c6451c_fe8d74d2",
+        "filename": "ves-agent-chart/Chart.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "VES Agent is the main component in this container. Vesmgr is for configuring and starting the VES agent.",
+      "parentUuid": "2b80ae93_243b6465",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 3
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "0310e739_27c11ab6",
         "filename": "ves-agent-chart/values.yaml",
         "patchSetId": 1
@@ -220,6 +388,30 @@
       "writtenOn": "2019-08-15T09:46:16Z",
       "side": 1,
       "message": "If at all possible, please do not push internal IP addresses to the LF Gerrit.",
+      "range": {
+        "startLine": 31,
+        "startChar": 30,
+        "endLine": 31,
+        "endChar": 43
+      },
+      "revId": "707f30fc8a54882251afb5423438c9b75bf5211f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "18cfd8d5_85ba0095",
+        "filename": "ves-agent-chart/values.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000017
+      },
+      "writtenOn": "2019-08-15T10:47:32Z",
+      "side": 1,
+      "message": "We\u0027ll remove these and replace with values received from configmap.",
+      "parentUuid": "0310e739_27c11ab6",
       "range": {
         "startLine": 31,
         "startChar": 30,
