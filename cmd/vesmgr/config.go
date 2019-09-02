@@ -21,17 +21,14 @@ import (
 	"gopkg.in/yaml.v2"
 	"time"
 	"io"
+	"os"
+	"strconv"
 )
 
 func basicVespaConf() VESAgentConfiguration {
 	var vespaconf = VESAgentConfiguration {
 		DataDir: "/tmp/data",
 		Debug:   false,
-		PrimaryCollector: CollectorConfiguration {
-			User: "user",
-			Password: "pass",
-			PassPhrase: "pass",
-		},
 		Event: EventConfiguration {
 			VNFName: "vespa-demo", // XXX
 			ReportingEntityID: "1af5bfa9-40b4-4522-b045-40e54f0310f", // XXX
@@ -71,7 +68,7 @@ func getRules(vespaconf *VESAgentConfiguration) {
 	// XXX
 	makeRule := func(expr string, obj_name string, obj_instance string) MetricRule {
 		return MetricRule {
-			Target: "AdditionalObject",
+			Target: "AdditionalObjects",
 			Expr: expr,
 			ObjectInstance: obj_instance,
 			ObjectName: obj_name,
@@ -95,9 +92,32 @@ func getRules(vespaconf *VESAgentConfiguration) {
 
 }
 
+func getCollectorConfiguration(vespaconf *VESAgentConfiguration) {
+	vespaconf.PrimaryCollector.User = os.Getenv("VESMGR_PRICOLLECTOR_USER")
+	vespaconf.PrimaryCollector.Password = os.Getenv("VESMGR_PRICOLLECTOR_PASSWORD")
+	vespaconf.PrimaryCollector.PassPhrase = os.Getenv("VESMGR_PRICOLLECTOR_PASSPHRASE")
+	vespaconf.PrimaryCollector.FQDN = os.Getenv("VESMGR_PRICOLLECTOR_ADDR")
+	vespaconf.PrimaryCollector.ServerRoot = os.Getenv("VESMGR_PRICOLLECTOR_SERVERROOT")
+	vespaconf.PrimaryCollector.Topic = os.Getenv("VESMGR_PRICOLLECTOR_TOPIC")
+	port_str := os.Getenv("VESMGR_PRICOLLECTOR_PORT")
+	if port_str == "" {
+		vespaconf.PrimaryCollector.Port = 8443
+	} else {
+		port, _ := strconv.Atoi(port_str)
+		vespaconf.PrimaryCollector.Port = port
+	}
+	secure_str := os.Getenv("VESMGR_PRICOLLECTOR_SECURE")
+	if secure_str == "true" {
+		vespaconf.PrimaryCollector.Secure = true
+	} else {
+		vespaconf.PrimaryCollector.Secure = false
+	}
+}
+
 func createVespaConfig(writer io.Writer) {
 	vespaconf := basicVespaConf()
 	getRules(&vespaconf)
+	getCollectorConfiguration(&vespaconf)
 	err := yaml.NewEncoder(writer).Encode(vespaconf)
 	if err != nil {
 		logger.Error("Cannot write vespa conf file: %s", err.Error())

@@ -46,4 +46,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: vespa-config
+            - secretRef:
+                name: vespa-secrets
+
 

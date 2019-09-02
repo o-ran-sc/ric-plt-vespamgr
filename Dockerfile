@@ -40,6 +40,11 @@ COPY $HOME/ .
 
 RUN GO111MODULE=on go mod download
 
+# Run vesmgr UT
+RUN export GOPATH=$HOME/go && \
+    export PATH=$GOPATH/bin:$GOROOT/bin:$PATH && \
+    go test ./...
+
 # Install vesmgr
 RUN export GOPATH=$HOME/go && \
     export PATH=$GOPATH/bin:$GOROOT/bin:$PATH && \

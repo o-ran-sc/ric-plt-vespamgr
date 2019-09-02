@@ -63,7 +63,7 @@ func vesmgrInit() {
 
 func startVesagent() chan error {
 	/* Start ves-agent */
-	cmd := exec.Command(vesagent.name, "-i", os.Getenv("VESMGR_HB_INTERVAL"), "-m", os.Getenv("VESMGR_MEAS_INTERVAL"), "-f", os.Getenv("VESMGR_PRICOLLECTOR_ADDR"), "-p", os.Getenv("VESMGR_PRICOLLECTOR_PORT"), "--Measurement.Prometheus.Address", os.Getenv("VESMGR_PROMETHEUS_ADDR"))
+	cmd := exec.Command(vesagent.name, "-i", os.Getenv("VESMGR_HB_INTERVAL"), "-m", os.Getenv("VESMGR_MEAS_INTERVAL"), "--Measurement.Prometheus.Address", os.Getenv("VESMGR_PROMETHEUS_ADDR"))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	ch := make(chan error)
