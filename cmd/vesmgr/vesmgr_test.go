@@ -18,10 +18,12 @@
 package main
 
 import (
-	"os"
-	"testing"
-
+	"errors"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"os/exec"
+	"testing"
+	"time"
 )
 
 func init() {
@@ -36,7 +38,8 @@ func init() {
 
 func TestStartVesagent(t *testing.T) {
 	assert.Equal(t, 0, vesagent.Pid)
-	ch := startVesagent()
+	ch := make(chan error)
+	startVesagent(ch)
 	assert.NotEqual(t, 0, vesagent.Pid)
 	t.Logf("VES agent pid = %d", vesagent.Pid)
 	vesagent.Pid = 0
@@ -45,12 +48,59 @@ func TestStartVesagent(t *testing.T) {
 }
 
 func TestStartVesagentFails(t *testing.T) {
-
 	vesagent.name = "Not-ves-agent"
 	assert.Equal(t, 0, vesagent.Pid)
-	ch := startVesagent()
+	ch := make(chan error)
+	startVesagent(ch)
 	err := <-ch
 	assert.NotNil(t, err)
 	assert.Equal(t, 0, vesagent.Pid)
 	vesagent.name = "ves-agent"
+}
+
+func TestGetMyIP(t *testing.T) {
+	vesmgr.myIPAddress = string("")
+	var err error
+	vesmgr.myIPAddress, err = getMyIP()
+	assert.NotEqual(t, string(""), vesmgr.myIPAddress)
+	assert.Equal(t, nil, err)
+}
+
+func TestMainLoopSupervision(t *testing.T) {
+	chXAppNotifications := make(chan []byte)
+	chSupervision := make(chan chan string)
+	chVesagent := make(chan error)
+	go runVesmgr(chVesagent, chSupervision, chXAppNotifications)
+
+	ch := make(chan string)
+	chSupervision <- ch
+	reply := <-ch
+	assert.Equal(t, "OK", reply)
+}
+
+func TestMainLoopVesagentError(t *testing.T) {
+	if os.Getenv("TEST_VESPA_EXIT") == "1" {
+		// we're run in a new process, now make vesmgr main loop exit
+		chXAppNotifications := make(chan []byte)
+		chSupervision := make(chan chan string)
+		chVesagent := make(chan error)
+		go runVesmgr(chVesagent, chSupervision, chXAppNotifications)
+
+		chVesagent <- errors.New("vesagent killed")
+		// we should never actually end up to this sleep, since the runVesmgr should exit
+		time.Sleep(3 * time.Second)
+		return
+	}
+
+	// Run the vesmgr exit test as a separate process
+	cmd := exec.Command(os.Args[0], "-test.run=TestMainLoopVesagentError")
+	cmd.Env = append(os.Environ(), "TEST_VESPA_EXIT=1")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+
+	// check that vesmgr existed with status 1
+	e, ok := err.(*exec.ExitError)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, "exit status 1", e.Error())
 }
