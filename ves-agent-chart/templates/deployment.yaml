@@ -48,5 +48,7 @@ spec:
                 name: vespa-config
             - secretRef:
                 name: vespa-secrets
-
+          env:
+            - name: VESMGR_APPMGRDOMAIN
+              value: appmgr-service
 

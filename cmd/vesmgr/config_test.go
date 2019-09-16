@@ -14,15 +14,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
- package main
+package main
 
- import (
-	"testing"
-	"time"
+import (
 	"bytes"
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
+	"testing"
+	"time"
 )
 
 func testBaseConf(t *testing.T, vesconf VESAgentConfiguration) {
@@ -58,7 +60,7 @@ func TestCollectorConfiguration(t *testing.T) {
 	assert.Equal(t, 1234, vesconf.PrimaryCollector.Port)
 	assert.Equal(t, "vescollector", vesconf.PrimaryCollector.ServerRoot)
 	assert.Equal(t, "sometopic", vesconf.PrimaryCollector.Topic)
-	assert.Equal(t, true, vesconf.PrimaryCollector.Secure)
+	assert.True(t, vesconf.PrimaryCollector.Secure)
 }
 
 func TestCollectorConfigurationWhenEnvironmentVariablesAreNotDefined(t *testing.T) {
@@ -81,7 +83,7 @@ func TestCollectorConfigurationWhenEnvironmentVariablesAreNotDefined(t *testing.
 	assert.Equal(t, 8443, vesconf.PrimaryCollector.Port)
 	assert.Equal(t, "", vesconf.PrimaryCollector.ServerRoot)
 	assert.Equal(t, "", vesconf.PrimaryCollector.Topic)
-	assert.Equal(t, false, vesconf.PrimaryCollector.Secure)
+	assert.False(t, vesconf.PrimaryCollector.Secure)
 }
 
 func TestCollectorConfigurationWhenPrimaryCollectorPortIsNotInteger(t *testing.T) {
@@ -95,14 +97,148 @@ func TestCollectorConfigurationWhenPrimaryCollectorSecureIsNotTrueOrFalse(t *tes
 	os.Setenv("VESMGR_PRICOLLECTOR_SECURE", "foo")
 	vesconf := basicVespaConf()
 	getCollectorConfiguration(&vesconf)
-	assert.Equal(t, false, vesconf.PrimaryCollector.Secure)
+	assert.False(t, vesconf.PrimaryCollector.Secure)
 }
 
-func TestYamlGeneration(t *testing.T) {
+func TestYamlGenerationWithoutXAppsConfig(t *testing.T) {
 	buffer := new(bytes.Buffer)
-	createVespaConfig(buffer)
+	createVespaConfig(buffer, []byte{})
 	var vesconf VESAgentConfiguration
 	err := yaml.Unmarshal(buffer.Bytes(), &vesconf)
 	assert.Nil(t, err)
 	testBaseConf(t, vesconf)
+	assert.Empty(t, vesconf.Measurement.Prometheus.Rules.Metrics)
+}
+
+func TestYamlGenerationWithXAppsConfig(t *testing.T) {
+	buffer := new(bytes.Buffer)
+	bytes, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
+	assert.Nil(t, err)
+	createVespaConfig(buffer, bytes)
+	var vesconf VESAgentConfiguration
+	err = yaml.Unmarshal(buffer.Bytes(), &vesconf)
+	assert.Nil(t, err)
+	testBaseConf(t, vesconf)
+	assert.Len(t, vesconf.Measurement.Prometheus.Rules.Metrics, 4)
+}
+
+// Helper function for the metrics parsing tests
+func metricsStringToInterfaceArray(metrics string) []interface{} {
+	var metricsArray map[string][]interface{}
+	json.Unmarshal([]byte(metrics), &metricsArray)
+	return metricsArray["metrics"]
+}
+
+func TestParseMetricsRules(t *testing.T) {
+	metricsJson := `{"metrics": [
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
+			{ "name": "ricxapp_RMR_ReceiveError", "objectName": "ricxappRMRReceiveErrorCounter", "objectInstance": "ricxappRMRReceiveError" },
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" },
+			{ "name": "ricxapp_RMR_TransmitError", "objectName": "ricxappRMRTransmitErrorCounter", "objectInstance": "ricxappRMRTransmitError" },
+			{ "name": "ricxapp_SDL_Stored", "objectName": "ricxappSDLStoredCounter", "objectInstance": "ricxappSDLStored" },
+			{ "name": "ricxapp_SDL_StoreError", "objectName": "ricxappSDLStoreErrorCounter", "objectInstance": "ricxappSDLStoreError" } ]}`
+	appMetrics := make(AppMetrics)
+	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	appMetrics = parseMetricsRules(m, appMetrics)
+	assert.Len(t, appMetrics, 6)
+	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
+	assert.Equal(t, "ricxappRMRTransmitErrorCounter", appMetrics["ricxapp_RMR_TransmitError"].ObjectName)
+	assert.Equal(t, "ricxappSDLStoreError", appMetrics["ricxapp_SDL_StoreError"].ObjectInstance)
+}
+
+func TestParseMetricsRulesNoMetrics(t *testing.T) {
+	appMetrics := make(AppMetrics)
+	metricsJson := `{"metrics": []`
+	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	appMetrics = parseMetricsRules(m, appMetrics)
+	assert.Empty(t, appMetrics)
+}
+
+func TestParseMetricsRulesAdditionalFields(t *testing.T) {
+	appMetrics := make(AppMetrics)
+	metricsJson := `{"metrics": [
+			{ "additionalField": "valueIgnored", "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" }]}`
+	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	appMetrics = parseMetricsRules(m, appMetrics)
+	assert.Len(t, appMetrics, 1)
+	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
+	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
+}
+
+func TestParseMetricsRulesMissingFields(t *testing.T) {
+	appMetrics := make(AppMetrics)
+	metricsJson := `{"metrics": [
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
+			{ "name": "ricxapp_RMR_ReceiveError", "objectInstance": "ricxappRMRReceiveError" },
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
+	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	appMetrics = parseMetricsRules(m, appMetrics)
+	assert.Len(t, appMetrics, 2)
+	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
+	assert.Equal(t, "ricxappRMRTransmittedCounter", appMetrics["ricxapp_RMR_Transmitted"].ObjectName)
+	_, ok := appMetrics["ricxapp_RMR_ReceiveError"]
+	assert.False(t, ok)
+}
+
+func TestParseMetricsRulesDuplicateDefinitionIsIgnored(t *testing.T) {
+	appMetrics := make(AppMetrics)
+	metricsJson := `{"metrics": [
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounterXXX", "objectInstance": "ricxappRMRReceivedXXX" },
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
+	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	appMetrics = parseMetricsRules(m, appMetrics)
+	assert.Len(t, appMetrics, 2)
+	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
+	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
+}
+
+func TestParseMetricsRulesIncrementalFillOfAppMetrics(t *testing.T) {
+	appMetrics := make(AppMetrics)
+	metricsJson1 := `{"metrics": [
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" }]}`
+	metricsJson2 := `{"metrics": [
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
+	var m1 []interface{} = metricsStringToInterfaceArray(metricsJson1)
+	var m2 []interface{} = metricsStringToInterfaceArray(metricsJson2)
+	appMetrics = parseMetricsRules(m1, appMetrics)
+	appMetrics = parseMetricsRules(m2, appMetrics)
+	assert.Len(t, appMetrics, 2)
+	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
+	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
+}
+
+func TestParseXAppDescriptor(t *testing.T) {
+	appMetrics := make(AppMetrics)
+	bytes, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
+	assert.Nil(t, err)
+
+	appMetrics = parseMetricsFromXAppDescriptor(bytes, appMetrics)
+	assert.Len(t, appMetrics, 4)
+	assert.Equal(t, "App1ExampleCounterOneObject", appMetrics["App1ExampleCounterOne"].ObjectName)
+	assert.Equal(t, "App1ExampleCounterOneObjectInstance", appMetrics["App1ExampleCounterOne"].ObjectInstance)
+	assert.Equal(t, "App1ExampleCounterTwoObject", appMetrics["App1ExampleCounterTwo"].ObjectName)
+	assert.Equal(t, "App1ExampleCounterTwoObjectInstance", appMetrics["App1ExampleCounterTwo"].ObjectInstance)
+	assert.Equal(t, "App2ExampleCounterOneObject", appMetrics["App2ExampleCounterOne"].ObjectName)
+	assert.Equal(t, "App2ExampleCounterOneObjectInstance", appMetrics["App2ExampleCounterOne"].ObjectInstance)
+	assert.Equal(t, "App2ExampleCounterTwoObject", appMetrics["App2ExampleCounterTwo"].ObjectName)
+	assert.Equal(t, "App2ExampleCounterTwoObjectInstance", appMetrics["App2ExampleCounterTwo"].ObjectInstance)
+}
+
+func TestParseXAppDescriptorWithNoConfig(t *testing.T) {
+	metricsJson := `[{{"metadata": "something", "descriptor": "somethingelse"}},
+	                 {{"metadata": "something", "descriptor": "somethingelse"}}]`
+	metricsBytes := []byte(metricsJson)
+	appMetrics := make(AppMetrics)
+	appMetrics = parseMetricsFromXAppDescriptor(metricsBytes, appMetrics)
+	assert.Empty(t, appMetrics)
+}
+
+func TestParseXAppDescriptorWithNoMetrics(t *testing.T) {
+	metricsJson := `[{{"metadata": "something", "descriptor": "somethingelse", "config":{}},
+	                 {{"metadata": "something", "descriptor": "somethingelse", "config":{}}}]`
+	metricsBytes := []byte(metricsJson)
+	appMetrics := make(AppMetrics)
+	appMetrics = parseMetricsFromXAppDescriptor(metricsBytes, appMetrics)
+	assert.Empty(t, appMetrics)
 }

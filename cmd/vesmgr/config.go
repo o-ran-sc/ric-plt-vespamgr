@@ -18,43 +18,44 @@
 package main
 
 import (
+	"encoding/json"
 	"gopkg.in/yaml.v2"
-	"time"
 	"io"
 	"os"
 	"strconv"
+	"time"
 )
 
 func basicVespaConf() VESAgentConfiguration {
-	var vespaconf = VESAgentConfiguration {
+	var vespaconf = VESAgentConfiguration{
 		DataDir: "/tmp/data",
 		Debug:   false,
-		Event: EventConfiguration {
-			VNFName: "vespa-demo", // XXX
+		Event: EventConfiguration{
+			VNFName:           "vespa-demo",                          // XXX
 			ReportingEntityID: "1af5bfa9-40b4-4522-b045-40e54f0310f", // XXX
-			MaxSize: 2000000,
-			NfNamingCode: "hsxp",
-			NfcNamingCodes: [] NfcNamingCode {
-				NfcNamingCode {
-					Type: "oam",
-					Vnfcs: [] string {"lr-ope-0","lr-ope-1","lr-ope-2"},
+			MaxSize:           2000000,
+			NfNamingCode:      "hsxp",
+			NfcNamingCodes: []NfcNamingCode{
+				NfcNamingCode{
+					Type:  "oam",
+					Vnfcs: []string{"lr-ope-0", "lr-ope-1", "lr-ope-2"},
 				},
-				NfcNamingCode {
-					Type: "etl",
-					Vnfcs: [] string {"lr-pro-0","lr-pro-1"},
+				NfcNamingCode{
+					Type:  "etl",
+					Vnfcs: []string{"lr-pro-0", "lr-pro-1"},
 				},
 			},
 			RetryInterval: time.Second * 5,
-			MaxMissed: 2,
+			MaxMissed:     2,
 		},
-		Measurement: MeasurementConfiguration {
-			DomainAbbreviation: "Mvfs",
+		Measurement: MeasurementConfiguration{
+			DomainAbbreviation:   "Mvfs",
 			MaxBufferingDuration: time.Hour,
-			Prometheus: PrometheusConfig {
-				Timeout: time.Second * 30,
+			Prometheus: PrometheusConfig{
+				Timeout:   time.Second * 30,
 				KeepAlive: time.Second * 30,
-				Rules: MetricRules {
-					DefaultValues: &MetricRule {
+				Rules: MetricRules{
+					DefaultValues: &MetricRule{
 						VMIDLabel: "'{{.labels.instance}}'",
 					},
 				},
@@ -64,32 +65,93 @@ func basicVespaConf() VESAgentConfiguration {
 	return vespaconf
 }
 
-func getRules(vespaconf *VESAgentConfiguration) {
-	// XXX
+type AppMetricsStruct struct {
+	ObjectName     string
+	ObjectInstance string
+	// xxx add labels here
+}
+
+type AppMetrics map[string]AppMetricsStruct
+
+// Parses the metrics data from an array of bytes, which is expected to contain a JSON
+// array with structs of the following format:
+//
+// { ...
+//   "config" : {
+//     "metrics": [
+//       { "name": "...", "objectName": "...", "objectInstamce": "..." },
+//       ...
+//     ]
+//   }
+// }
+func parseMetricsFromXAppDescriptor(descriptor []byte, appMetrics AppMetrics) AppMetrics {
+	var desc []map[string]interface{}
+	json.Unmarshal(descriptor, &desc)
+
+	for _, app := range desc {
+		config, config_ok := app["config"]
+		if config_ok {
+			metrics, metrics_ok := config.(map[string]interface{})["metrics"]
+			if metrics_ok {
+				parseMetricsRules(metrics.([]interface{}), appMetrics)
+			}
+		}
+	}
+	return appMetrics
+}
+
+// Parses the metrics data from an array of interfaces, which are expected to be maps
+// of the following format:
+//    { "name": xxx, "objectName": yyy, "objectInstance": zzz }
+// Entries, which do not have all the necessary fields, are ignored.
+func parseMetricsRules(metricsMap []interface{}, appMetrics AppMetrics) AppMetrics {
+	for _, element := range metricsMap {
+		name, name_ok := element.(map[string]interface{})["name"].(string)
+		if name_ok {
+			_, already_found := appMetrics[name]
+			objectName, objectName_ok := element.(map[string]interface{})["objectName"].(string)
+			objectInstance, objectInstance_ok := element.(map[string]interface{})["objectInstance"].(string)
+			if !already_found && objectName_ok && objectInstance_ok {
+				appMetrics[name] = AppMetricsStruct{objectName, objectInstance}
+				logger.Info("parsed counter %s %s %s", name, objectName, objectInstance)
+			}
+			if already_found {
+				logger.Info("skipped duplicate counter %s", name)
+			}
+		}
+	}
+	return appMetrics
+}
+
+func getRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) {
+	appMetrics := make(AppMetrics)
+	parseMetricsFromXAppDescriptor(xAppConfig, appMetrics)
+
 	makeRule := func(expr string, obj_name string, obj_instance string) MetricRule {
-		return MetricRule {
-			Target: "AdditionalObjects",
-			Expr: expr,
+		return MetricRule{
+			Target:         "AdditionalObjects",
+			Expr:           expr,
 			ObjectInstance: obj_instance,
-			ObjectName: obj_name,
-			ObjectKeys: [] Label {
-				Label {
+			ObjectName:     obj_name,
+			ObjectKeys: []Label{
+				Label{
 					Name: "ricComponentName",
-					Expr: "'{{.labels.app_kubernetes_io_instance}}'",
+					Expr: "'{{.labels.kubernetes_name}}'",
 				},
 			},
 		}
 	}
-	// Hard coded for now
-	vespaconf.Measurement.Prometheus.Rules.Metrics = []MetricRule {
-		makeRule("ricxapp_RMR_Received", "ricxappRMRreceivedCounter", "ricxappRMRReceived"),
-		makeRule("ricxapp_RMR_ReceiveError", "ricxappRMRReceiveErrorCounter", "ricxappRMRReceiveError"),
-		makeRule("ricxapp_RMR_Transmitted", "ricxappRMRTransmittedCounter", "ricxappRMRTransmitted"),
-		makeRule("ricxapp_RMR_TransmitError", "ricxappRMRTransmitErrorCounter", "ricxappRMRTransmitError"),
-		makeRule("ricxapp_SDL_Stored", "ricxappSDLStoredCounter", "ricxappSDLStored"),
-		makeRule("ricxapp_SDL_StoreError", "ricxappSDLStoreErrorCounter", "ricxappSDLStoreError"),
-	}
+	var metricsMap map[string][]interface{}
+	json.Unmarshal(xAppConfig, &metricsMap)
+	metrics := parseMetricsRules(metricsMap["metrics"], appMetrics)
 
+	vespaconf.Measurement.Prometheus.Rules.Metrics = make([]MetricRule, 0, len(metrics))
+	for key, value := range metrics {
+		vespaconf.Measurement.Prometheus.Rules.Metrics = append(vespaconf.Measurement.Prometheus.Rules.Metrics, makeRule(key, value.ObjectName, value.ObjectInstance))
+	}
+	if len(vespaconf.Measurement.Prometheus.Rules.Metrics) == 0 {
+		logger.Info("vespa config with empty metrics")
+	}
 }
 
 func getCollectorConfiguration(vespaconf *VESAgentConfiguration) {
@@ -114,9 +176,9 @@ func getCollectorConfiguration(vespaconf *VESAgentConfiguration) {
 	}
 }
 
-func createVespaConfig(writer io.Writer) {
+func createVespaConfig(writer io.Writer, xAppStatus []byte) {
 	vespaconf := basicVespaConf()
-	getRules(&vespaconf)
+	getRules(&vespaconf, xAppStatus)
 	getCollectorConfiguration(&vespaconf)
 	err := yaml.NewEncoder(writer).Encode(vespaconf)
 	if err != nil {
