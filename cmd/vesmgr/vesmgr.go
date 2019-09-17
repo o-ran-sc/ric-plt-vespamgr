@@ -127,9 +127,6 @@ func vesmgrInit() {
 
 	subscribeXAppNotifications(chXAppSubscriptions)
 
-	createConf([]byte{})
-	startVesagent(chVesagent)
-
 	runVesmgr(chVesagent, chSupervision, chXAppNotifications, chXAppSubscriptions)
 }
 
@@ -210,6 +207,7 @@ func runVesmgr(chVesagent chan error, chSupervision chan chan string, chXAppNoti
 	logger.Info("vesmgr main loop ready")
 	mystate := normalState
 	var xappStatus []byte
+	var err error
 	for {
 		select {
 		case supervision := <-chSupervision:
@@ -225,7 +223,6 @@ func runVesmgr(chVesagent chan error, chSupervision chan chan string, chXAppNoti
 			 * the situation is fixed when the next
 			 * xapp notif comes
 			 */
-			var err error
 			xappStatus, err = queryConf()
 			if err == nil {
 				killVespa(vesagent.process)
@@ -246,6 +243,11 @@ func runVesmgr(chVesagent chan error, chSupervision chan chan string, chXAppNoti
 			if isSubscribed.err != nil {
 				logger.Error("Failed to make xApp subscriptions, vesmgr exiting: %s", isSubscribed.err)
 				os.Exit(1)
+			}
+			xappStatus, err = queryConf()
+			if err == nil {
+				createConf(xappStatus)
+				startVesagent(chVesagent)
 			}
 		}
 	}
