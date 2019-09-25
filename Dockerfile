@@ -56,6 +56,12 @@ RUN export GOPATH=$HOME/go && \
 
 # Ubuntu or something smaller?
 FROM ubuntu:18.04
+# For trouble-shooting
+RUN apt-get update; apt-get install -y \
+    iputils-ping \
+    net-tools \
+    curl
+
 # Create the configuration directory for ves agent
 RUN mkdir -p /etc/ves-agent
 COPY --from=gobuild root/go/bin /root/go/bin
