@@ -19,11 +19,12 @@ package main
 
 import (
 	"encoding/json"
-	"gopkg.in/yaml.v2"
 	"io"
 	"os"
 	"strconv"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 func basicVespaConf() VESAgentConfiguration {
@@ -65,12 +66,13 @@ func basicVespaConf() VESAgentConfiguration {
 	return vespaconf
 }
 
+// AppMetricsStruct contains xapplication metrics definition
 type AppMetricsStruct struct {
 	ObjectName     string
 	ObjectInstance string
-	// xxx add labels here
 }
 
+// AppMetrics contains metrics definitions for all Xapps
 type AppMetrics map[string]AppMetricsStruct
 
 // Parses the metrics data from an array of bytes, which is expected to contain a JSON
@@ -89,10 +91,10 @@ func parseMetricsFromXAppDescriptor(descriptor []byte, appMetrics AppMetrics) Ap
 	json.Unmarshal(descriptor, &desc)
 
 	for _, app := range desc {
-		config, config_ok := app["config"]
-		if config_ok {
-			metrics, metrics_ok := config.(map[string]interface{})["metrics"]
-			if metrics_ok {
+		config, configOk := app["config"]
+		if configOk {
+			metrics, metricsOk := config.(map[string]interface{})["metrics"]
+			if metricsOk {
 				parseMetricsRules(metrics.([]interface{}), appMetrics)
 			}
 		}
@@ -106,16 +108,16 @@ func parseMetricsFromXAppDescriptor(descriptor []byte, appMetrics AppMetrics) Ap
 // Entries, which do not have all the necessary fields, are ignored.
 func parseMetricsRules(metricsMap []interface{}, appMetrics AppMetrics) AppMetrics {
 	for _, element := range metricsMap {
-		name, name_ok := element.(map[string]interface{})["name"].(string)
-		if name_ok {
-			_, already_found := appMetrics[name]
-			objectName, objectName_ok := element.(map[string]interface{})["objectName"].(string)
-			objectInstance, objectInstance_ok := element.(map[string]interface{})["objectInstance"].(string)
-			if !already_found && objectName_ok && objectInstance_ok {
+		name, nameOk := element.(map[string]interface{})["name"].(string)
+		if nameOk {
+			_, alreadyFound := appMetrics[name]
+			objectName, objectNameOk := element.(map[string]interface{})["objectName"].(string)
+			objectInstance, objectInstanceOk := element.(map[string]interface{})["objectInstance"].(string)
+			if !alreadyFound && objectNameOk && objectInstanceOk {
 				appMetrics[name] = AppMetricsStruct{objectName, objectInstance}
 				logger.Info("parsed counter %s %s %s", name, objectName, objectInstance)
 			}
-			if already_found {
+			if alreadyFound {
 				logger.Info("skipped duplicate counter %s", name)
 			}
 		}
@@ -127,12 +129,12 @@ func getRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) {
 	appMetrics := make(AppMetrics)
 	parseMetricsFromXAppDescriptor(xAppConfig, appMetrics)
 
-	makeRule := func(expr string, obj_name string, obj_instance string) MetricRule {
+	makeRule := func(expr string, objName string, objInstance string) MetricRule {
 		return MetricRule{
 			Target:         "AdditionalObjects",
 			Expr:           expr,
-			ObjectInstance: obj_instance,
-			ObjectName:     obj_name,
+			ObjectInstance: objInstance,
+			ObjectName:     objName,
 			ObjectKeys: []Label{
 				Label{
 					Name: "ricComponentName",
@@ -161,15 +163,15 @@ func getCollectorConfiguration(vespaconf *VESAgentConfiguration) {
 	vespaconf.PrimaryCollector.FQDN = os.Getenv("VESMGR_PRICOLLECTOR_ADDR")
 	vespaconf.PrimaryCollector.ServerRoot = os.Getenv("VESMGR_PRICOLLECTOR_SERVERROOT")
 	vespaconf.PrimaryCollector.Topic = os.Getenv("VESMGR_PRICOLLECTOR_TOPIC")
-	port_str := os.Getenv("VESMGR_PRICOLLECTOR_PORT")
-	if port_str == "" {
+	portStr := os.Getenv("VESMGR_PRICOLLECTOR_PORT")
+	if portStr == "" {
 		vespaconf.PrimaryCollector.Port = 8443
 	} else {
-		port, _ := strconv.Atoi(port_str)
+		port, _ := strconv.Atoi(portStr)
 		vespaconf.PrimaryCollector.Port = port
 	}
-	secure_str := os.Getenv("VESMGR_PRICOLLECTOR_SECURE")
-	if secure_str == "true" {
+	secureStr := os.Getenv("VESMGR_PRICOLLECTOR_SECURE")
+	if secureStr == "true" {
 		vespaconf.PrimaryCollector.Secure = true
 	} else {
 		vespaconf.PrimaryCollector.Secure = false

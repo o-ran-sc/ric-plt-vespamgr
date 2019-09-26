@@ -24,28 +24,47 @@ import (
 	"net/http"
 )
 
-const SupervisionUrl = "/supervision/"
+// SupervisionURL is the url where kubernetes posts alive queries
+const SupervisionURL = "/supervision/"
 
-func startHttpServer(listener net.Listener, xappnotifUrl string, notif_ch chan []byte, supervision_ch chan chan string) {
-	go runHttpServer(listener, xappnotifUrl, notif_ch, supervision_ch)
+// HTTPServer is the VesMgr HTTP server struct
+type HTTPServer struct {
+	listener net.Listener
 }
 
-func runHttpServer(listener net.Listener, xappNotifUrl string, notif_ch chan []byte, supervision_ch chan chan string) {
+func (s *HTTPServer) init(address string) *HTTPServer {
+	var err error
+	s.listener, err = net.Listen("tcp", address)
+	if err != nil {
+		panic("Cannot listen:" + err.Error())
+	}
+	return s
+}
+
+func (s *HTTPServer) start(notifPath string, notifCh chan []byte, supCh chan chan string) {
+	go runHTTPServer(s.listener, notifPath, notifCh, supCh)
+}
+
+func (s *HTTPServer) addr() net.Addr {
+	return s.listener.Addr()
+}
+
+func runHTTPServer(listener net.Listener, xappNotifURL string, notifCh chan []byte, supervisionCh chan chan string) {
 
 	logger.Info("vesmgr http server serving at %s", listener.Addr())
 
-	http.HandleFunc(xappNotifUrl, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(xappNotifURL, func(w http.ResponseWriter, r *http.Request) {
 
 		switch r.Method {
 		case "POST":
-			logger.Info("httpServer: POST in %s", xappNotifUrl)
+			logger.Info("httpServer: POST in %s", xappNotifURL)
 			body, err := ioutil.ReadAll(r.Body)
 			defer r.Body.Close()
 			if err != nil {
 				logger.Error("httpServer: Invalid body in POST request")
 				return
 			}
-			notif_ch <- body
+			notifCh <- body
 			return
 		default:
 			logger.Error("httpServer: Invalid method %s to %s", r.Method, r.URL.Path)
@@ -54,15 +73,15 @@ func runHttpServer(listener net.Listener, xappNotifUrl string, notif_ch chan []b
 		}
 	})
 
-	http.HandleFunc(SupervisionUrl, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(SupervisionURL, func(w http.ResponseWriter, r *http.Request) {
 
 		switch r.Method {
 		case "GET":
 			logger.Info("httpServer: GET supervision")
-			supervision_ack_ch := make(chan string)
+			supervisionAckCh := make(chan string)
 			// send supervision to the main loop
-			supervision_ch <- supervision_ack_ch
-			reply := <-supervision_ack_ch
+			supervisionCh <- supervisionAckCh
+			reply := <-supervisionAckCh
 			logger.Info("httpServer: supervision ack from the main loop: %s", reply)
 			fmt.Fprintf(w, reply)
 			return
