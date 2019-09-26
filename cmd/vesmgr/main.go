@@ -18,5 +18,6 @@
 package main
 
 func main() {
-	vesmgrInit()
+	vesmgr := VesMgr{}
+	vesmgr.Init(vesmgrXappNotifPort).Run()
 }

@@ -17,42 +17,41 @@
 package main
 
 import (
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
-type HttpServerTestSuite struct {
+type HTTPServerTestSuite struct {
 	suite.Suite
-	listener       net.Listener
-	ch_notif       chan []byte
-	ch_supervision chan chan string
+	chNotif       chan []byte
+	chSupervision chan chan string
+	server        HTTPServer
 }
 
 // suite setup creates the HTTP server
-func (suite *HttpServerTestSuite) SetupSuite() {
+func (suite *HTTPServerTestSuite) SetupSuite() {
 	os.Unsetenv("http_proxy")
 	os.Unsetenv("HTTP_PROXY")
-	var err error
-	suite.listener, err = net.Listen("tcp", ":0")
-	suite.Nil(err)
-	suite.ch_notif = make(chan []byte)
-	suite.ch_supervision = make(chan chan string)
-	startHttpServer(suite.listener, "/vesmgr_notif/", suite.ch_notif, suite.ch_supervision)
+	suite.chNotif = make(chan []byte)
+	suite.chSupervision = make(chan chan string)
+	suite.server = HTTPServer{}
+	suite.server.init(":0")
+	suite.server.start("/vesmgr_notif/", suite.chNotif, suite.chSupervision)
 }
 
-func (suite *HttpServerTestSuite) TestHtppServerSupervisionInvalidOperation() {
-	resp, reply := suite.doPost("http://"+suite.listener.Addr().String()+SupervisionUrl, "supervision")
+func (suite *HTTPServerTestSuite) TestHtppServerSupervisionInvalidOperation() {
+	resp, reply := suite.doPost("http://"+suite.server.addr().String()+SupervisionURL, "supervision")
 	suite.Equal("405 method not allowed\n", reply)
 	suite.Equal(405, resp.StatusCode)
 	suite.Equal("405 Method Not Allowed", resp.Status)
 }
 
-func (suite *HttpServerTestSuite) doGet(url string) (*http.Response, string) {
+func (suite *HTTPServerTestSuite) doGet(url string) (*http.Response, string) {
 	resp, err := http.Get(url)
 	suite.Nil(err)
 
@@ -62,8 +61,8 @@ func (suite *HttpServerTestSuite) doGet(url string) (*http.Response, string) {
 	return resp, string(contents)
 }
 
-func (suite *HttpServerTestSuite) doPost(serverUrl string, msg string) (*http.Response, string) {
-	resp, err := http.Post(serverUrl, "data", strings.NewReader(msg))
+func (suite *HTTPServerTestSuite) doPost(serverURL string, msg string) (*http.Response, string) {
+	resp, err := http.Post(serverURL, "data", strings.NewReader(msg))
 	suite.Nil(err)
 
 	defer resp.Body.Close()
@@ -72,41 +71,41 @@ func (suite *HttpServerTestSuite) doPost(serverUrl string, msg string) (*http.Re
 	return resp, string(contents)
 }
 
-func replySupervision(ch_supervision chan chan string, reply string) {
-	ch_supervision_ack := <-ch_supervision
-	ch_supervision_ack <- reply
+func replySupervision(chSupervision chan chan string, reply string) {
+	chSupervisionAck := <-chSupervision
+	chSupervisionAck <- reply
 }
 
-func (suite *HttpServerTestSuite) TestHttpServerSupervision() {
+func (suite *HTTPServerTestSuite) TestHttpServerSupervision() {
 
 	// start the "main loop" to reply to the supervision to the HTTPServer
-	go replySupervision(suite.ch_supervision, "I'm just fine")
+	go replySupervision(suite.chSupervision, "I'm just fine")
 
-	resp, reply := suite.doGet("http://" + suite.listener.Addr().String() + SupervisionUrl)
+	resp, reply := suite.doGet("http://" + suite.server.addr().String() + SupervisionURL)
 
 	suite.Equal("I'm just fine", reply)
 	suite.Equal(200, resp.StatusCode)
 	suite.Equal("200 OK", resp.Status)
 }
 
-func (suite *HttpServerTestSuite) TestHttpServerInvalidUrl() {
-	resp, reply := suite.doPost("http://"+suite.listener.Addr().String()+"/invalid_url", "foo")
+func (suite *HTTPServerTestSuite) TestHttpServerInvalidUrl() {
+	resp, reply := suite.doPost("http://"+suite.server.addr().String()+"/invalid_url", "foo")
 	suite.Equal("404 page not found\n", reply)
 	suite.Equal(404, resp.StatusCode)
 	suite.Equal("404 Not Found", resp.Status)
 }
 
-func readXAppNotification(ch_notif chan []byte, ch chan []byte) {
-	notification := <-ch_notif
+func readXAppNotification(chNotif chan []byte, ch chan []byte) {
+	notification := <-chNotif
 	ch <- notification
 }
 
-func (suite *HttpServerTestSuite) TestHttpServerXappNotif() {
+func (suite *HTTPServerTestSuite) TestHttpServerXappNotif() {
 	// start the "main loop" to receive the xAppNotification message from the HTTPServer
 	ch := make(chan []byte)
-	go readXAppNotification(suite.ch_notif, ch)
+	go readXAppNotification(suite.chNotif, ch)
 
-	resp, reply := suite.doPost("http://"+suite.listener.Addr().String()+"/vesmgr_notif/", "test data")
+	resp, reply := suite.doPost("http://"+suite.server.addr().String()+"/vesmgr_notif/", "test data")
 	suite.Equal("", reply)
 	suite.Equal(200, resp.StatusCode)
 	suite.Equal("200 OK", resp.Status)
@@ -114,13 +113,13 @@ func (suite *HttpServerTestSuite) TestHttpServerXappNotif() {
 	suite.Equal([]byte("test data"), notification)
 }
 
-func (suite *HttpServerTestSuite) TestHttpServerXappNotifInvalidOperation() {
-	resp, reply := suite.doGet("http://" + suite.listener.Addr().String() + "/vesmgr_notif/")
+func (suite *HTTPServerTestSuite) TestHttpServerXappNotifInvalidOperation() {
+	resp, reply := suite.doGet("http://" + suite.server.addr().String() + "/vesmgr_notif/")
 	suite.Equal("405 method not allowed\n", reply)
 	suite.Equal(405, resp.StatusCode)
 	suite.Equal("405 Method Not Allowed", resp.Status)
 }
 
 func TestHttpServerSuite(t *testing.T) {
-	suite.Run(t, new(HttpServerTestSuite))
+	suite.Run(t, new(HTTPServerTestSuite))
 }

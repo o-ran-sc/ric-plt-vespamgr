@@ -21,38 +21,33 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
-type AppmgrHttpServerTestSuite struct {
+type AppmgrHTTPServerTestSuite struct {
 	suite.Suite
-	subscriptions chan subsChannel
-	xappNotifUrl  string
+	subscriptions chan subscriptionNotification
+	xappNotifURL  string
 }
 
 // suite setup
-func (suite *AppmgrHttpServerTestSuite) SetupSuite() {
-	vesmgr.appmgrSubsId = string("")
-	vesmgr.myIPAddress, _ = getMyIP()
-	suite.xappNotifUrl = "http://" + vesmgr.myIPAddress + ":" + vesmgrXappNotifPort + vesmgrXappNotifPath
-	suite.subscriptions = make(chan subsChannel)
+func (suite *AppmgrHTTPServerTestSuite) SetupSuite() {
+	// the url here is not actually used anywhere
+	suite.xappNotifURL = "http://127.0.0.1:8080" + vesmgrXappNotifPath
+	suite.subscriptions = make(chan subscriptionNotification)
 }
 
 // test setup
-func (suite *AppmgrHttpServerTestSuite) SetupTest() {
-	suite.subscriptions = make(chan subsChannel)
+func (suite *AppmgrHTTPServerTestSuite) SetupTest() {
+	suite.subscriptions = make(chan subscriptionNotification)
 }
 
-// test teardown
-func (suite *AppmgrHttpServerTestSuite) TearDownTest() {
-	vesmgr.appmgrSubsId = string("")
-}
-
-func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotifications() {
+func (suite *AppmgrHTTPServerTestSuite) TestSubscribexAppNotifications() {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		body, _ := ioutil.ReadAll(req.Body)
 		var result map[string]interface{}
@@ -68,13 +63,13 @@ func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotifications() {
 	}))
 	defer testServer.Close()
 
-	go subscribexAppNotifications(suite.xappNotifUrl, suite.subscriptions, 1, testServer.URL)
+	go subscribexAppNotifications(suite.xappNotifURL, suite.subscriptions, 1, testServer.URL)
 	isSubscribed := <-suite.subscriptions
 	suite.Nil(isSubscribed.err)
-	suite.Equal("deadbeef1234567890", vesmgr.appmgrSubsId)
+	suite.Equal("deadbeef1234567890", isSubscribed.subsID)
 }
 
-func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsWrongStatus() {
+func (suite *AppmgrHTTPServerTestSuite) TestSubscribexAppNotificationsWrongStatus() {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Add("Content-Type", "application/json")
 		res.WriteHeader(http.StatusUnauthorized)
@@ -82,32 +77,32 @@ func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsWrongStatu
 	}))
 	defer testServer.Close()
 
-	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, suite.xappNotifUrl))
+	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, suite.xappNotifURL))
 	req, _ := http.NewRequest("POST", testServer.URL, bytes.NewBuffer(requestBody))
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 
-	err := subscribexAppNotificationsClientDo(req, client)
+	subsID, err := subscribexAppNotificationsClientDo(req, client)
 	suite.Equal(errWrongStatusCode, err)
 	// after failed POST vesmgr.appmgrSubsId holds an initial values
-	suite.Equal("", vesmgr.appmgrSubsId)
+	suite.Equal("", subsID)
 }
 
-func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsWrongUrl() {
+func (suite *AppmgrHTTPServerTestSuite) TestSubscribexAppNotificationsWrongUrl() {
 	// use fake appmgrUrl that is not served in unit test
-	appmgrUrl := "/I_do_not_exist/"
-	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, suite.xappNotifUrl))
-	req, _ := http.NewRequest("POST", appmgrUrl, bytes.NewBuffer(requestBody))
+	appmgrURL := "/I_do_not_exist/"
+	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, suite.xappNotifURL))
+	req, _ := http.NewRequest("POST", appmgrURL, bytes.NewBuffer(requestBody))
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 
-	err := subscribexAppNotificationsClientDo(req, client)
+	subsID, err := subscribexAppNotificationsClientDo(req, client)
 	suite.Equal(errPostingFailed, err)
 	// after failed POST vesmgr.appmgrSubsId holds an initial values
-	suite.Equal("", vesmgr.appmgrSubsId)
+	suite.Equal("", subsID)
 }
 
-func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsReadBodyFails() {
+func (suite *AppmgrHTTPServerTestSuite) TestSubscribexAppNotificationsReadBodyFails() {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Content-Length", "1")
 		res.Header().Add("Content-Type", "application/json")
@@ -115,13 +110,13 @@ func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsReadBodyFa
 	}))
 	defer testServer.Close()
 
-	go subscribexAppNotifications(suite.xappNotifUrl, suite.subscriptions, 1, testServer.URL)
+	go subscribexAppNotifications(suite.xappNotifURL, suite.subscriptions, 1, testServer.URL)
 	isSubscribed := <-suite.subscriptions
 	suite.Equal("unexpected EOF", isSubscribed.err.Error())
-	suite.Equal("", vesmgr.appmgrSubsId)
+	suite.Equal("", isSubscribed.subsID)
 }
 
-func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsUnMarshalFails() {
+func (suite *AppmgrHTTPServerTestSuite) TestSubscribexAppNotificationsUnMarshalFails() {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Add("Content-Type", "application/json")
 		res.WriteHeader(http.StatusCreated)
@@ -129,12 +124,12 @@ func (suite *AppmgrHttpServerTestSuite) TestSubscribexAppNotificationsUnMarshalF
 	}))
 	defer testServer.Close()
 
-	go subscribexAppNotifications(suite.xappNotifUrl, suite.subscriptions, 1, testServer.URL)
+	go subscribexAppNotifications(suite.xappNotifURL, suite.subscriptions, 1, testServer.URL)
 	isSubscribed := <-suite.subscriptions
 	suite.Equal("invalid character 'd' after object key", isSubscribed.err.Error())
-	suite.Equal("", vesmgr.appmgrSubsId)
+	suite.Equal("", isSubscribed.subsID)
 }
 
 func TestAppmgrHttpServerTestSuite(t *testing.T) {
-	suite.Run(t, new(AppmgrHttpServerTestSuite))
+	suite.Run(t, new(AppmgrHTTPServerTestSuite))
 }

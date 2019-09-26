@@ -19,12 +19,13 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
 func testBaseConf(t *testing.T, vesconf VESAgentConfiguration) {
@@ -130,7 +131,7 @@ func metricsStringToInterfaceArray(metrics string) []interface{} {
 }
 
 func TestParseMetricsRules(t *testing.T) {
-	metricsJson := `{"metrics": [
+	metricsJSON := `{"metrics": [
 			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
 			{ "name": "ricxapp_RMR_ReceiveError", "objectName": "ricxappRMRReceiveErrorCounter", "objectInstance": "ricxappRMRReceiveError" },
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" },
@@ -138,7 +139,7 @@ func TestParseMetricsRules(t *testing.T) {
 			{ "name": "ricxapp_SDL_Stored", "objectName": "ricxappSDLStoredCounter", "objectInstance": "ricxappSDLStored" },
 			{ "name": "ricxapp_SDL_StoreError", "objectName": "ricxappSDLStoreErrorCounter", "objectInstance": "ricxappSDLStoreError" } ]}`
 	appMetrics := make(AppMetrics)
-	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	m := metricsStringToInterfaceArray(metricsJSON)
 	appMetrics = parseMetricsRules(m, appMetrics)
 	assert.Len(t, appMetrics, 6)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
@@ -148,17 +149,17 @@ func TestParseMetricsRules(t *testing.T) {
 
 func TestParseMetricsRulesNoMetrics(t *testing.T) {
 	appMetrics := make(AppMetrics)
-	metricsJson := `{"metrics": []`
-	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	metricsJSON := `{"metrics": []`
+	m := metricsStringToInterfaceArray(metricsJSON)
 	appMetrics = parseMetricsRules(m, appMetrics)
 	assert.Empty(t, appMetrics)
 }
 
 func TestParseMetricsRulesAdditionalFields(t *testing.T) {
 	appMetrics := make(AppMetrics)
-	metricsJson := `{"metrics": [
+	metricsJSON := `{"metrics": [
 			{ "additionalField": "valueIgnored", "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" }]}`
-	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	m := metricsStringToInterfaceArray(metricsJSON)
 	appMetrics = parseMetricsRules(m, appMetrics)
 	assert.Len(t, appMetrics, 1)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
@@ -167,11 +168,11 @@ func TestParseMetricsRulesAdditionalFields(t *testing.T) {
 
 func TestParseMetricsRulesMissingFields(t *testing.T) {
 	appMetrics := make(AppMetrics)
-	metricsJson := `{"metrics": [
+	metricsJSON := `{"metrics": [
 			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
 			{ "name": "ricxapp_RMR_ReceiveError", "objectInstance": "ricxappRMRReceiveError" },
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
-	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	m := metricsStringToInterfaceArray(metricsJSON)
 	appMetrics = parseMetricsRules(m, appMetrics)
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
@@ -182,11 +183,11 @@ func TestParseMetricsRulesMissingFields(t *testing.T) {
 
 func TestParseMetricsRulesDuplicateDefinitionIsIgnored(t *testing.T) {
 	appMetrics := make(AppMetrics)
-	metricsJson := `{"metrics": [
+	metricsJSON := `{"metrics": [
 			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
 			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounterXXX", "objectInstance": "ricxappRMRReceivedXXX" },
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
-	var m []interface{} = metricsStringToInterfaceArray(metricsJson)
+	m := metricsStringToInterfaceArray(metricsJSON)
 	appMetrics = parseMetricsRules(m, appMetrics)
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
@@ -195,12 +196,12 @@ func TestParseMetricsRulesDuplicateDefinitionIsIgnored(t *testing.T) {
 
 func TestParseMetricsRulesIncrementalFillOfAppMetrics(t *testing.T) {
 	appMetrics := make(AppMetrics)
-	metricsJson1 := `{"metrics": [
+	metricsJSON1 := `{"metrics": [
 			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" }]}`
-	metricsJson2 := `{"metrics": [
+	metricsJSON2 := `{"metrics": [
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
-	var m1 []interface{} = metricsStringToInterfaceArray(metricsJson1)
-	var m2 []interface{} = metricsStringToInterfaceArray(metricsJson2)
+	m1 := metricsStringToInterfaceArray(metricsJSON1)
+	m2 := metricsStringToInterfaceArray(metricsJSON2)
 	appMetrics = parseMetricsRules(m1, appMetrics)
 	appMetrics = parseMetricsRules(m2, appMetrics)
 	assert.Len(t, appMetrics, 2)
@@ -226,18 +227,18 @@ func TestParseXAppDescriptor(t *testing.T) {
 }
 
 func TestParseXAppDescriptorWithNoConfig(t *testing.T) {
-	metricsJson := `[{{"metadata": "something", "descriptor": "somethingelse"}},
+	metricsJSON := `[{{"metadata": "something", "descriptor": "somethingelse"}},
 	                 {{"metadata": "something", "descriptor": "somethingelse"}}]`
-	metricsBytes := []byte(metricsJson)
+	metricsBytes := []byte(metricsJSON)
 	appMetrics := make(AppMetrics)
 	appMetrics = parseMetricsFromXAppDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)
 }
 
 func TestParseXAppDescriptorWithNoMetrics(t *testing.T) {
-	metricsJson := `[{{"metadata": "something", "descriptor": "somethingelse", "config":{}},
+	metricsJSON := `[{{"metadata": "something", "descriptor": "somethingelse", "config":{}},
 	                 {{"metadata": "something", "descriptor": "somethingelse", "config":{}}}]`
-	metricsBytes := []byte(metricsJson)
+	metricsBytes := []byte(metricsJSON)
 	appMetrics := make(AppMetrics)
 	appMetrics = parseMetricsFromXAppDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)

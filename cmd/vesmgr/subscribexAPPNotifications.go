@@ -30,60 +30,58 @@ import (
 // appmgr API
 const appmgrSubsPath = "/ric/v1/subscriptions"
 
-var errPostingFailed error = errors.New("Posting subscriptions failed")
-var errWrongStatusCode error = errors.New("Wrong subscriptions response StatusCode")
+var errPostingFailed = errors.New("Posting subscriptions failed")
+var errWrongStatusCode = errors.New("Wrong subscriptions response StatusCode")
 
-func subscribexAppNotifications(targetUrl string, subscriptions chan subsChannel, timeout time.Duration, subsUrl string) {
-	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, targetUrl))
-	req, err := http.NewRequest("POST", subsUrl, bytes.NewBuffer(requestBody))
+func subscribexAppNotifications(targetURL string, subscriptions chan subscriptionNotification, timeout time.Duration, subsURL string) {
+	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, targetURL))
+	req, err := http.NewRequest("POST", subsURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		logger.Error("Setting NewRequest failed: %s", err)
-		subscriptions <- subsChannel{false, err}
+		subscriptions <- subscriptionNotification{false, err, ""}
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	client.Timeout = time.Second * timeout
+	var subsID string
 	for {
-		err := subscribexAppNotificationsClientDo(req, client)
+		subsID, err = subscribexAppNotificationsClientDo(req, client)
 		if err == nil {
 			break
 		} else if err != errPostingFailed && err != errWrongStatusCode {
-			subscriptions <- subsChannel{false, err}
+			subscriptions <- subscriptionNotification{false, err, ""}
 			return
 		}
 		time.Sleep(5 * time.Second)
 	}
-	subscriptions <- subsChannel{true, nil}
+	subscriptions <- subscriptionNotification{true, nil, subsID}
 }
 
-func subscribexAppNotificationsClientDo(req *http.Request, client *http.Client) error {
+func subscribexAppNotificationsClientDo(req *http.Request, client *http.Client) (string, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		logger.Error("Posting subscriptions failed: %s", err)
-		return errPostingFailed
-	} else {
-		defer resp.Body.Close()
-		if resp.StatusCode == http.StatusCreated {
-			logger.Info("Subscriptions response StatusCode: %d", resp.StatusCode)
-			logger.Info("Subscriptions response headers: %s", resp.Header)
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				logger.Error("Subscriptions response Body read failed: %s", err)
-				return err
-			}
-			logger.Info("Response Body: %s", body)
-			var result map[string]interface{}
-			if err := json.Unmarshal([]byte(body), &result); err != nil {
-				logger.Error("json.Unmarshal failed: %s", err)
-				return err
-			}
-			logger.Info("Subscription id from the response: %s", result["id"].(string))
-			vesmgr.appmgrSubsId = result["id"].(string)
-			return nil
-		} else {
-			logger.Error("Wrong subscriptions response StatusCode: %d", resp.StatusCode)
-			return errWrongStatusCode
-		}
+		return "", errPostingFailed
 	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusCreated {
+		logger.Info("Subscriptions response StatusCode: %d", resp.StatusCode)
+		logger.Info("Subscriptions response headers: %s", resp.Header)
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logger.Error("Subscriptions response Body read failed: %s", err)
+			return "", err
+		}
+		logger.Info("Response Body: %s", body)
+		var result map[string]interface{}
+		if err := json.Unmarshal([]byte(body), &result); err != nil {
+			logger.Error("json.Unmarshal failed: %s", err)
+			return "", err
+		}
+		logger.Info("Subscription id from the response: %s", result["id"].(string))
+		return result["id"].(string), nil
+	}
+	logger.Error("Wrong subscriptions response StatusCode: %d", resp.StatusCode)
+	return "", errWrongStatusCode
 }
