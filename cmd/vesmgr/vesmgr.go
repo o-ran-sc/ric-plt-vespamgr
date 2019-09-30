@@ -52,6 +52,13 @@ type subscriptionNotification struct {
 
 var logger *mdcloggo.MdcLogger
 
+// Version information, which is filled during compilation
+// Version tag of vesmgr container
+var Version string
+
+// Hash of the git commit used in building
+var Hash string
+
 const vesmgrXappNotifPort = "8080"
 const vesmgrXappNotifPath = "/vesmgr_xappnotif/"
 const timeoutPostXAppSubscriptions = 5
@@ -101,6 +108,8 @@ func (vesmgr *VesMgr) subscribeXAppNotifications() {
 // Init initializes the vesmgr
 func (vesmgr *VesMgr) Init(listenPort string) *VesMgr {
 	logger.Info("vesmgrInit")
+	logger.Info("version %s (%s)", Version, Hash)
+
 	var err error
 	if vesmgr.myIPAddress, err = getMyIP(); err != nil || vesmgr.myIPAddress == "" {
 		logger.Error("Cannot get myIPAddress: IP %s, err %s", vesmgr.myIPAddress, err.Error())
