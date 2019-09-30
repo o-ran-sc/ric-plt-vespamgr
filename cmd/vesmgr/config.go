@@ -31,6 +31,7 @@ import (
 
 const defaultReportingEntityID = "00000000-0000-0000-0000-000000000000"
 const defaultVNFName = "Vespa"
+const defaultNFNamingCode = "ricp"
 
 func readSystemUUID() string {
 	data, err := ioutil.ReadFile("/sys/class/dmi/id/product_uuid")
@@ -48,6 +49,14 @@ func getVNFName() string {
 	return VNFName
 }
 
+func getNFNamingCode() string {
+	NFNamingCode := os.Getenv("VESMGR_NFNAMINGCODE")
+	if NFNamingCode == "" {
+		return defaultNFNamingCode
+	}
+	return NFNamingCode
+}
+
 func basicVespaConf() VESAgentConfiguration {
 	var vespaconf = VESAgentConfiguration{
 		DataDir: "/tmp/data",
@@ -57,17 +66,8 @@ func basicVespaConf() VESAgentConfiguration {
 			ReportingEntityName: "Vespa",
 			ReportingEntityID:   readSystemUUID(),
 			MaxSize:             2000000,
-			NfNamingCode:        "hsxp",
-			NfcNamingCodes: []NfcNamingCode{
-				NfcNamingCode{
-					Type:  "oam",
-					Vnfcs: []string{"lr-ope-0", "lr-ope-1", "lr-ope-2"},
-				},
-				NfcNamingCode{
-					Type:  "etl",
-					Vnfcs: []string{"lr-pro-0", "lr-pro-1"},
-				},
-			},
+			NfNamingCode:        getNFNamingCode(),
+			NfcNamingCodes: []NfcNamingCode{},
 			RetryInterval: time.Second * 5,
 			MaxMissed:     2,
 		},

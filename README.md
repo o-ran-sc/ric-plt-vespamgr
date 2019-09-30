@@ -52,6 +52,7 @@ JSON schema v28.4.1:
 The VESPA manager container requires the following environment variables:
 
 * VESMGR_VNFNAME - VNF name as a string. Default: Vespa.
+* VESMGR_NFNAMINGCODE - NF naming code as a string. Default: ricp.
 * VESMGR_HB_INTERVAL - VES heartbeat interval as a string. For example: 30s.
 * VESMGR_MEAS_INTERVAL - Measurement interval as a string. For example: 60s.
 * VESMGR_PROMETHEUS_ADDR - Prometheus address. For example: http://127.0.0.1:123
@@ -72,6 +73,15 @@ The VESPA manager container requires the following environment variables:
 # Liveness probe
 
 The VESPA manager replies to liveness HTTP GET at path /supervision.
+
+# Errors
+
+The VESPA manager exits in the following error cases:
+
+* The VES Agent exits
+* An unrecoverable system error during the initialization, for example
+  * Creation of the VES Agent configuration file fails
+  * Creation of a HTTP request message fails
 
 # Unit Tests
 
