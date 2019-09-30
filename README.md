@@ -73,6 +73,15 @@ The VESPA manager container requires the following environment variables:
 
 The VESPA manager replies to liveness HTTP GET at path /supervision.
 
+# Errors
+
+The VESPA manager exits in the following error cases:
+
+* The VES Agent exits
+* An unrecoverable system error during the initialization, for example
+  * Creation of the VES Agent configuration file fails
+  * Creation of a HTTP request message fails
+
 # Unit Tests
 
 In order to run the VESPA manager unit tests, give the following command:
