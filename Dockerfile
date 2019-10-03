@@ -50,7 +50,8 @@ FROM ubuntu:18.04
 RUN apt-get update; apt-get install -y \
     iputils-ping \
     net-tools \
-    curl
+    curl \
+    tcpdump
 
 # Create the configuration directory for ves agent
 RUN mkdir -p /etc/ves-agent
