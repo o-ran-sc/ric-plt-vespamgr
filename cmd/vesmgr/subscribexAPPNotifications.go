@@ -38,7 +38,7 @@ var errPostingFailed = errors.New("Posting subscriptions failed")
 var errWrongStatusCode = errors.New("Wrong subscriptions response StatusCode")
 
 func subscribexAppNotifications(targetURL string, subscriptions chan subscriptionNotification, timeout time.Duration, subsURL string) {
-	requestBody := []byte(fmt.Sprintf(`{"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}`, targetURL))
+	requestBody := []byte(fmt.Sprintf(`{"Data": {"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}}`, targetURL))
 	req, err := http.NewRequest("POST", subsURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		logger.Error("Setting NewRequest failed: %s", err)
