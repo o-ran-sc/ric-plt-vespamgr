@@ -65,7 +65,7 @@ func subscribexAppNotifications(targetURL string, subscriptions chan subscriptio
 func subscribexAppNotificationsClientDo(req *http.Request, client *http.Client) (string, error) {
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Error("Posting subscriptions failed: %s", err)
+		logger.Error("Posting subscriptions failed: %v", err)
 		return "", errPostingFailed
 	}
 	defer resp.Body.Close()

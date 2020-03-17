@@ -112,7 +112,7 @@ func (vesmgr *VesMgr) subscribeXAppNotifications() {
 // Init initializes the vesmgr
 func (vesmgr *VesMgr) Init(listenPort string) *VesMgr {
 	logger.Info("vesmgrInit")
-	logger.Info("version %s (%s)", Version, Hash)
+	logger.Info("version: %s (%s)", Version, Hash)
 
 	var err error
 	if vesmgr.myIPAddress, err = getMyIP(); err != nil || vesmgr.myIPAddress == "" {
@@ -138,7 +138,8 @@ func (vesmgr *VesMgr) Init(listenPort string) *VesMgr {
 	vesmgr.httpServer.init(vesmgr.myIPAddress + ":" + listenPort)
 	vesmgr.vesagent = makeRunner("ves-agent", "-i", os.Getenv("VESMGR_HB_INTERVAL"),
 		"-m", os.Getenv("VESMGR_MEAS_INTERVAL"), "--Measurement.Prometheus.Address",
-		os.Getenv("VESMGR_PROMETHEUS_ADDR"))
+		os.Getenv("VESMGR_PROMETHEUS_ADDR"), "--AlertManager.Bind", os.Getenv("VESMGR_ALERTMANAGER_BIND_ADDR"),
+		"--Debug")
 	return vesmgr
 }
 
