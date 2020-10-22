@@ -126,24 +126,26 @@
             },
             "measurements": [
                 {
-                    "measId": "M9001",
-                    "object": "XAPP-xApp1",
+                    "moId": "SEP-12/XAPP-1",
+                    "measType": "X2",
+                    "measId": "9001",
+                    "measInterval": "60",
                     "metrics": [
                         {
-                            "description": "Example counter 1",
-                            "enabled": true,
                             "name": "App1ExampleCounterOne",
-                            "type": "counter",
                             "objectName": "App1ExampleCounterOneObject",
-                            "objectInstance": "App1ExampleCounterOneObjectInstance"
+                            "objectInstance": "App1ExampleCounterOneObjectInstance",
+                            "counterId": "0011",
+                            "type": "counter",
+                            "description": "Example counter 1"
                         },
                         {
-                            "description": "Example counter 2",
-                            "enabled": true,
                             "name": "App1ExampleCounterTwo",
-                            "type": "counter",
                             "objectName": "App1ExampleCounterTwoObject",
-                            "objectInstance": "App1ExampleCounterTwoObjectInstance"
+                            "objectInstance": "App1ExampleCounterTwoObjectInstance",
+                            "counterId": "0012",
+                            "type": "counter",
+                            "description": "Example counter 2"
                         }
                     ]
                 }
@@ -277,24 +279,26 @@
             },
             "measurements": [
                 {
-                    "measId": "M9001",
-                    "object": "XAPP-xApp2",
+                    "moId": "SEP-12/XAPP-2",
+                    "measType": "X2",
+                    "measId": "9002",
+                    "measInterval": "60",
                     "metrics": [
                         {
-                            "description": "Example counter",
-                            "enabled": true,
                             "name": "App2ExampleCounterOne",
-                            "type": "counter",
                             "objectName": "App2ExampleCounterOneObject",
-                            "objectInstance": "App2ExampleCounterOneObjectInstance"
+                            "objectInstance": "App2ExampleCounterOneObjectInstance",
+                            "counterId": "0021",
+                            "type": "counter",
+                            "description": "Example counter 1"
                         },
                         {
-                            "description": "Another example counter",
-                            "enabled": true,
                             "name": "App2ExampleCounterTwo",
-                            "type": "counter",
                             "objectName": "App2ExampleCounterTwoObject",
-                            "objectInstance": "App2ExampleCounterTwoObjectInstance"
+                            "objectInstance": "App2ExampleCounterTwoObjectInstance",
+                            "counterId": "0022",
+                            "type": "counter",
+                            "description": "Example counter 2"
                         }
                     ]
                 }
