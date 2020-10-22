@@ -157,15 +157,15 @@ func metricsStringToInterfaceArray(metrics string) []interface{} {
 
 func TestParseMetricsRules(t *testing.T) {
 	metricsJSON := `{"metrics": [
-			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
-			{ "name": "ricxapp_RMR_ReceiveError", "objectName": "ricxappRMRReceiveErrorCounter", "objectInstance": "ricxappRMRReceiveError" },
-			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" },
-			{ "name": "ricxapp_RMR_TransmitError", "objectName": "ricxappRMRTransmitErrorCounter", "objectInstance": "ricxappRMRTransmitError" },
-			{ "name": "ricxapp_SDL_Stored", "objectName": "ricxappSDLStoredCounter", "objectInstance": "ricxappSDLStored" },
-			{ "name": "ricxapp_SDL_StoreError", "objectName": "ricxappSDLStoreErrorCounter", "objectInstance": "ricxappSDLStoreError" } ]}`
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived", "counterId": "0011" },
+			{ "name": "ricxapp_RMR_ReceiveError", "objectName": "ricxappRMRReceiveErrorCounter", "objectInstance": "ricxappRMRReceiveError", "counterId": "0011" },
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" },
+			{ "name": "ricxapp_RMR_TransmitError", "objectName": "ricxappRMRTransmitErrorCounter", "objectInstance": "ricxappRMRTransmitError", "counterId": "0011" },
+			{ "name": "ricxapp_SDL_Stored", "objectName": "ricxappSDLStoredCounter", "objectInstance": "ricxappSDLStored", "counterId": "0011" },
+			{ "name": "ricxapp_SDL_StoreError", "objectName": "ricxappSDLStoreErrorCounter", "objectInstance": "ricxappSDLStoreError", "counterId": "0011" } ]}`
 	appMetrics := make(AppMetrics)
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "M1234", "App-1")
+	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 6)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRTransmitErrorCounter", appMetrics["ricxapp_RMR_TransmitError"].ObjectName)
@@ -176,16 +176,16 @@ func TestParseMetricsRulesNoMetrics(t *testing.T) {
 	appMetrics := make(AppMetrics)
 	metricsJSON := `{"metrics": []`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "M1234", "App-1")
+	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Empty(t, appMetrics)
 }
 
 func TestParseMetricsRulesAdditionalFields(t *testing.T) {
 	appMetrics := make(AppMetrics)
 	metricsJSON := `{"metrics": [
-			{ "additionalField": "valueIgnored", "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" }]}`
+			{ "additionalField": "valueIgnored", "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived", "counterId": "0011" }]}`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "M1234", "App-1")
+	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 1)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
@@ -194,11 +194,11 @@ func TestParseMetricsRulesAdditionalFields(t *testing.T) {
 func TestParseMetricsRulesMissingFields(t *testing.T) {
 	appMetrics := make(AppMetrics)
 	metricsJSON := `{"metrics": [
-			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived", "counterId": "0011" },
 			{ "name": "ricxapp_RMR_ReceiveError", "objectInstance": "ricxappRMRReceiveError" },
-			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" }]}`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "M1234", "App-1")
+	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRTransmittedCounter", appMetrics["ricxapp_RMR_Transmitted"].ObjectName)
@@ -209,11 +209,11 @@ func TestParseMetricsRulesMissingFields(t *testing.T) {
 func TestParseMetricsRulesDuplicateDefinitionIsIgnored(t *testing.T) {
 	appMetrics := make(AppMetrics)
 	metricsJSON := `{"metrics": [
-			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" },
-			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounterXXX", "objectInstance": "ricxappRMRReceivedXXX" },
-			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived", "counterId": "0011" },
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounterXXX", "objectInstance": "ricxappRMRReceivedXXX", "counterId": "0011" },
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" }]}`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "M1234", "App-1")
+	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
@@ -222,13 +222,13 @@ func TestParseMetricsRulesDuplicateDefinitionIsIgnored(t *testing.T) {
 func TestParseMetricsRulesIncrementalFillOfAppMetrics(t *testing.T) {
 	appMetrics := make(AppMetrics)
 	metricsJSON1 := `{"metrics": [
-			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived" }]}`
+			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived", "counterId": "0011" }]}`
 	metricsJSON2 := `{"metrics": [
-			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted" }]}`
+			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" }]}`
 	m1 := metricsStringToInterfaceArray(metricsJSON1)
 	m2 := metricsStringToInterfaceArray(metricsJSON2)
-	appMetrics = parseMetricsRules(m1, appMetrics, "M1234", "App-1")
-	appMetrics = parseMetricsRules(m2, appMetrics,  "M1234", "App-1")
+	appMetrics = parseMetricsRules(m1, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = parseMetricsRules(m2, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)

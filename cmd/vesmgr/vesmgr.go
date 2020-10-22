@@ -187,9 +187,15 @@ func queryXAppsConfig(appmgrURL string, timeout time.Duration) ([]byte, error) {
 	return emptyConfig, errors.New(resp.Status)
 }
 
-func queryConf() ([]byte, error) {
-	return queryXAppsConfig("http://"+appmgrDomain+":"+appmgrPort+appmgrXAppConfigPath,
-		10*time.Second)
+func queryConf() (appConfig []byte, err error) {
+	for i := 0; i < 10; i++ {
+		appConfig, err = queryXAppsConfig("http://"+appmgrDomain+":"+appmgrPort+appmgrXAppConfigPath, 10*time.Second)
+		if len(appConfig) > 0 {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	return appConfig, err
 }
 
 func (vesmgr *VesMgr) emptyNotificationsChannel() {
@@ -250,11 +256,17 @@ func (vesmgr *VesMgr) waitSubscriptionLoop() {
 // Run the vesmgr process main loop
 func (vesmgr *VesMgr) Run() {
 	logger.Info("vesmgr main loop ready")
+
 	vesmgr.httpServer.start(vesmgrXappNotifPath, vesmgr.chXAppNotifications, vesmgr.chSupervision)
+
 	vesmgr.subscribeXAppNotifications()
+
 	vesmgr.waitSubscriptionLoop()
+
 	xappConfig, _ := queryConf()
+
 	createConf(vespaConfigFile, xappConfig)
+
 	vesmgr.startVesagent()
 	for {
 		vesmgr.servRequest()
