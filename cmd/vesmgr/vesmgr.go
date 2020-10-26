@@ -165,6 +165,7 @@ func queryXAppsConfig(appmgrURL string, timeout time.Duration) ([]byte, error) {
 		logger.Error("Failed to create a HTTP request: %s", err)
 		return emptyConfig, err
 	}
+	
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	client.Timeout = time.Second * timeout
@@ -174,6 +175,7 @@ func queryXAppsConfig(appmgrURL string, timeout time.Duration) ([]byte, error) {
 		return emptyConfig, err
 	}
 	defer resp.Body.Close()
+	
 	if resp.StatusCode == http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -183,6 +185,7 @@ func queryXAppsConfig(appmgrURL string, timeout time.Duration) ([]byte, error) {
 		logger.Info("query xAppConfig completed")
 		return body, nil
 	}
+	
 	logger.Error("Error from xApp config query: %s", resp.Status)
 	return emptyConfig, errors.New(resp.Status)
 }
