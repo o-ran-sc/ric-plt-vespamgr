@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -39,6 +40,7 @@ type QueryXAppsConfigTestSuite struct {
 	suite.Suite
 	listener    net.Listener
 	xAppMgrFunc do
+	mu          sync.Mutex
 }
 
 // suite setup creates the HTTP server
@@ -56,7 +58,9 @@ func runXAppMgr(listener net.Listener, url string, suite *QueryXAppsConfigTestSu
 	http.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
+			suite.mu.Lock()
 			suite.xAppMgrFunc(w)
+			suite.mu.Unlock()
 		}
 	})
 	http.Serve(listener, nil)

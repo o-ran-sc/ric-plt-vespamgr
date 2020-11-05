@@ -23,12 +23,12 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
 	"time"
-	"fmt"
 
 	mdcloggo "gerrit.o-ran-sc.org/r/com/golog.git"
 )
@@ -126,11 +126,11 @@ func (vesmgr *VesMgr) Init(listenPort string) *VesMgr {
 	if ok {
 		logger.Info("Using appmgrdomain %s", appmgrDomain)
 	} else {
-                pltnamespace := os.Getenv("PLT_NAMESPACE")
-                if pltnamespace == "" {
-                   pltnamespace = "ricplt"
-                }
-   		appmgrDomain = fmt.Sprintf("service-%s-appmgr-http.%s.svc.cluster.local",pltnamespace, pltnamespace)
+		pltnamespace := os.Getenv("PLT_NAMESPACE")
+		if pltnamespace == "" {
+			pltnamespace = "ricplt"
+		}
+		appmgrDomain = fmt.Sprintf("service-%s-appmgr-http.%s.svc.cluster.local", pltnamespace, pltnamespace)
 		logger.Info("Using default appmgrdomain %s", appmgrDomain)
 	}
 	vesmgr.chXAppSubscriptions = make(chan subscriptionNotification)
