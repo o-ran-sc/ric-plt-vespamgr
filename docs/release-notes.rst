@@ -30,7 +30,7 @@ Release-Notes
 =============
 
 
-This document provides the release notes for version 0.0.8 of vespamgr.
+This document provides the release notes for version 0.5.0 of vespamgr.
 
 .. contents::
    :depth: 3
@@ -48,6 +48,9 @@ Version history
 |                    |                    |                    |                    |
 +--------------------+--------------------+--------------------+--------------------+
 | 2020-06-18         | v0.4.0             | Abukar Mohamed     | Bronze Release     |
+|                    |                    |                    |                    |
++--------------------+--------------------+--------------------+--------------------+
+| 2020-11-13         | v0.5.4             | Abukar Mohamed     | Cherry Release     |
 |                    |                    |                    |                    |
 +--------------------+--------------------+--------------------+--------------------+
 
@@ -80,7 +83,7 @@ Deliverables
 Software Deliverables
 +++++++++++++++++++++
 
-The deliverable is a container running two processes:
+The deliverable is a pod running two processes:
 - VESPA manager
 - VES Agent, i.e. VESPA (https://github.com/nokia/ONAP-VESPA)
 
