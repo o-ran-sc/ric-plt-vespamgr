@@ -125,7 +125,7 @@ type AppMetrics map[string]AppMetricsStruct
 //     ]
 //    }
 // }
-func parseMetricsFromXAppDescriptor(descriptor []byte, appMetrics AppMetrics) AppMetrics {
+func parseMetricsFromDescriptor(descriptor []byte, appMetrics AppMetrics) AppMetrics {
 	var desc []map[string]interface{}
 	json.Unmarshal(descriptor, &desc)
 
@@ -200,7 +200,16 @@ func getRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) bool {
 		}
 	}
 	appMetrics := make(AppMetrics)
-	metrics := parseMetricsFromXAppDescriptor(xAppConfig, appMetrics)
+	metrics := parseMetricsFromDescriptor(xAppConfig, appMetrics)
+
+	if pltFile := os.Getenv("VESMGR_PLT_CFG_FILE"); pltFile	!= "" {
+		pltConfig, err := ioutil.ReadFile(pltFile)
+		if err != nil {
+			logger.Error("Unable to read platform config file: %v", err)
+		} else {
+			metrics = parseMetricsFromDescriptor(pltConfig, metrics)
+		}
+	}
 
 	vespaconf.Measurement.Prometheus.Rules.Metrics = make([]MetricRule, 0, len(metrics))
 	for key, value := range metrics {

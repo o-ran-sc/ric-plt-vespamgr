@@ -239,7 +239,7 @@ func TestParseXAppDescriptor(t *testing.T) {
 	bytes, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
 	assert.Nil(t, err)
 
-	appMetrics = parseMetricsFromXAppDescriptor(bytes, appMetrics)
+	appMetrics = parseMetricsFromDescriptor(bytes, appMetrics)
 	assert.Len(t, appMetrics, 4)
 	assert.Equal(t, "App1ExampleCounterOneObject", appMetrics["App1ExampleCounterOne"].ObjectName)
 	assert.Equal(t, "App1ExampleCounterOneObjectInstance", appMetrics["App1ExampleCounterOne"].ObjectInstance)
@@ -256,7 +256,7 @@ func TestParseXAppDescriptorWithNoConfig(t *testing.T) {
 	                 {{"metadata": "something", "descriptor": "somethingelse"}}]`
 	metricsBytes := []byte(metricsJSON)
 	appMetrics := make(AppMetrics)
-	appMetrics = parseMetricsFromXAppDescriptor(metricsBytes, appMetrics)
+	appMetrics = parseMetricsFromDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)
 }
 
@@ -265,6 +265,6 @@ func TestParseXAppDescriptorWithNoMetrics(t *testing.T) {
 	                 {{"metadata": "something", "descriptor": "somethingelse", "config":{}}}]`
 	metricsBytes := []byte(metricsJSON)
 	appMetrics := make(AppMetrics)
-	appMetrics = parseMetricsFromXAppDescriptor(metricsBytes, appMetrics)
+	appMetrics = parseMetricsFromDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)
 }
