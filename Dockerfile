@@ -17,8 +17,11 @@
 #   This source code is part of the near-RT RIC (RAN Intelligent Controller)
 #   platform project (RICP).
 #
-# Start from golang v1.12 base image
-FROM golang:1.12 as gobuild
+
+FROM golang:1.12 as gobuild-vespamgr
+
+# Install utilities
+RUN apt update && apt install -y iputils-ping net-tools curl sudo
 
 # Set the Working Directory for ves-agent inside the container
 RUN mkdir -p $GOPATH/src/VESPA
@@ -34,32 +37,30 @@ RUN export GOPATH=$HOME/go && \
     export PATH=$GOPATH/bin:$GOROOT/bin:$PATH && \
     go install -v ./ves-agent
 
-# Set the Working Directory for vesmgr inside the container
-RUN mkdir -p $GOPATH/src/vesmgr
-WORKDIR $GOPATH/src/vesmgr
-
-# Copy vesmgr to the Working Directory
-COPY $HOME/ .
+# Set the Working Directory for vespamgr inside the container
+RUN mkdir -p /go/src/vespamgr
+COPY . /go/src/vespamgr
+WORKDIR /go/src/vespamgr
 
 RUN ./build_vesmgr.sh
 
-#################
-#
-# Second phase, copy compiled stuff to a runtime container
-
-# Ubuntu or something smaller?
+# Final, executable and deployable container
 FROM ubuntu:18.04
-# For trouble-shooting
-RUN apt-get update; apt-get install -y \
-    iputils-ping \
-    net-tools \
-    curl \
-    tcpdump
 
-# Create the configuration directory for ves agent
 RUN mkdir -p /etc/ves-agent
-COPY --from=gobuild root/go/bin /root/go/bin
+
+COPY --from=gobuild-vespamgr /usr/local/lib /usr/local/lib
+COPY --from=gobuild-vespamgr /root/go/bin /root/go/bin
+COPY --from=gobuild-vespamgr /root/go/bin/vespamgr /usr/local/bin/vesmgr
+COPY --from=gobuild-vespamgr /root/go/bin/vespamgr /vespamgr
+COPY --from=gobuild-vespamgr /go/src/vespamgr/config/config-file.json /etc/ves-agent/config-file.json
+COPY --from=gobuild-vespamgr /go/src/vespamgr/config/uta_rtg.rt /etc/ves-agent/uta_rtg.rt
+
+RUN ldconfig
+
+ENV CFG_FILE=/etc/ves-agent/config-file.json
+ENV RMR_SEED_RT=/etc/ves-agent/uta_rtg.rt
 
 ENV PATH="/root/go/bin:${PATH}"
 
-ENTRYPOINT ["vesmgr"]
+ENTRYPOINT ["/vespamgr"]
