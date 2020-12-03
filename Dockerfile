@@ -17,8 +17,8 @@
 #   This source code is part of the near-RT RIC (RAN Intelligent Controller)
 #   platform project (RICP).
 #
-# Start from golang v1.12 base image
-FROM golang:1.12 as gobuild
+# Start from golang v1.13 base image
+FROM golang:1.13 as gobuild
 
 # Set the Working Directory for ves-agent inside the container
 RUN mkdir -p $GOPATH/src/VESPA
@@ -56,9 +56,16 @@ RUN apt-get update; apt-get install -y \
     curl \
     tcpdump
 
-# Create the configuration directory for ves agent
+# Create the configuration directory for ves-agent
 RUN mkdir -p /etc/ves-agent
 COPY --from=gobuild root/go/bin /root/go/bin
+
+COPY config/config-file.json /etc/ves-agent/config-file.json
+COPY config/uta_rtg.rt /etc/ves-agent/uta_rtg.rt
+
+ENV CFG_FILE=/etc/ves-agent/config-file.json
+ENV RMR_SEED_RT=/etc/ves-agent/uta_rtg.rt
+ENV RMR_RTG_SVC="service-ricplt-rtmgr-rmr.ricplt:4560"
 
 ENV PATH="/root/go/bin:${PATH}"
 

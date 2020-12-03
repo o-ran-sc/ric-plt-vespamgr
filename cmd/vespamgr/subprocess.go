@@ -21,31 +21,35 @@
 package main
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"os"
+	"os/exec"
 )
 
-func TestProcessRunning(t *testing.T) {
-	r := makeRunner("echo", "a")
-	ch := make(chan error)
-	r.run(ch)
-	err := <-ch
-	assert.Nil(t, err)
+type CommandRunner struct {
+	exe  string
+	args []string
+	cmd  *exec.Cmd
 }
 
-func TestProcessKill(t *testing.T) {
-	r := makeRunner("sleep", "20")
-	ch := make(chan error)
-	r.run(ch)
-	assert.Nil(t, r.kill())
-	<-ch // wait and seee that kills is actually done
+func (r *CommandRunner) Run(result chan error) {
+	r.cmd = exec.Command(r.exe, r.args...)
+	r.cmd.Stdout = os.Stdout
+	r.cmd.Stderr = os.Stderr
+	err := r.cmd.Start()
+	go func() {
+		if err != nil {
+			result <- err
+		} else {
+			result <- r.cmd.Wait()
+		}
+	}()
 }
 
-func TestProcessRunningFails(t *testing.T) {
-	r := makeRunner("foobarbaz")
-	ch := make(chan error)
-	r.run(ch)
-	err := <-ch
-	assert.NotNil(t, err)
+func (r *CommandRunner) Kill() error {
+	return r.cmd.Process.Kill()
+}
+
+func NewCommandRunner(exe string, arg ...string) *CommandRunner {
+	r := &CommandRunner{exe: exe, args: arg}
+	return r
 }

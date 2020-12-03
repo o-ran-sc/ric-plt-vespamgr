@@ -27,10 +27,10 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
+	app "gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/xapp"
 	"gopkg.in/yaml.v2"
 )
 
@@ -38,7 +38,7 @@ const defaultReportingEntityID = "00000000-0000-0000-0000-000000000000"
 const defaultVNFName = "Vespa"
 const defaultNFNamingCode = "ricp"
 
-func readSystemUUID() string {
+func (v *VespaMgr) readSystemUUID() string {
 	data, err := ioutil.ReadFile("/sys/class/dmi/id/product_uuid")
 	if err != nil {
 		return defaultReportingEntityID
@@ -46,7 +46,7 @@ func readSystemUUID() string {
 	return strings.TrimSpace(string(data))
 }
 
-func getVNFName() string {
+func (v *VespaMgr) getVNFName() string {
 	VNFName := os.Getenv("VESMGR_VNFNAME")
 	if VNFName == "" {
 		return defaultVNFName
@@ -54,7 +54,7 @@ func getVNFName() string {
 	return VNFName
 }
 
-func getNFNamingCode() string {
+func (v *VespaMgr) getNFNamingCode() string {
 	NFNamingCode := os.Getenv("VESMGR_NFNAMINGCODE")
 	if NFNamingCode == "" {
 		return defaultNFNamingCode
@@ -62,16 +62,16 @@ func getNFNamingCode() string {
 	return NFNamingCode
 }
 
-func basicVespaConf() VESAgentConfiguration {
+func (v *VespaMgr) BasicVespaConf() VESAgentConfiguration {
 	var vespaconf = VESAgentConfiguration{
 		DataDir: "/tmp/data",
 		Debug:   false,
 		Event: EventConfiguration{
-			VNFName:             getVNFName(),
+			VNFName:             v.getVNFName(),
 			ReportingEntityName: "Vespa",
-			ReportingEntityID:   readSystemUUID(),
+			ReportingEntityID:   v.readSystemUUID(),
 			MaxSize:             2000000,
-			NfNamingCode:        getNFNamingCode(),
+			NfNamingCode:        v.getNFNamingCode(),
 			NfcNamingCodes:      []NfcNamingCode{},
 			RetryInterval:       time.Second * 5,
 			MaxMissed:           2,
@@ -95,20 +95,6 @@ func basicVespaConf() VESAgentConfiguration {
 	return vespaconf
 }
 
-// AppMetricsStruct contains xapplication metrics definition
-type AppMetricsStruct struct {
-	MoId           string
-	MeasType       string
-	MeasId         string
-	MeasInterval   string
-	ObjectName     string
-	ObjectInstance string
-	CounterId      string
-}
-
-// AppMetrics contains metrics definitions for all Xapps
-type AppMetrics map[string]AppMetricsStruct
-
 // Parses the metrics data from an array of bytes, which is expected to contain a JSON
 // array with structs of the following format:
 //
@@ -125,19 +111,19 @@ type AppMetrics map[string]AppMetricsStruct
 //     ]
 //    }
 // }
-func parseMetricsFromDescriptor(descriptor []byte, appMetrics AppMetrics) AppMetrics {
+func (v *VespaMgr) ParseMetricsFromDescriptor(descriptor []byte, appMetrics AppMetrics) AppMetrics {
 	var desc []map[string]interface{}
 	json.Unmarshal(descriptor, &desc)
 
-	for _, app := range desc {
-		config, configOk := app["config"]
+	for _, appl := range desc {
+		config, configOk := appl["config"]
 		if !configOk {
-			logger.Info("No xApp config found!")
+			app.Logger.Info("No xApp config found!")
 			continue
 		}
 		measurements, measurementsOk := config.(map[string]interface{})["measurements"]
 		if !measurementsOk {
-			logger.Info("No xApp metrics found!")
+			app.Logger.Info("No xApp metrics found!")
 			continue
 		}
 
@@ -148,12 +134,12 @@ func parseMetricsFromDescriptor(descriptor []byte, appMetrics AppMetrics) AppMet
 			measInterval, measIntervalOk := m.(map[string]interface{})["measInterval"].(string)
 			metrics, metricsOk := m.(map[string]interface{})["metrics"]
 			if !metricsOk || !measTypeOk || !measIdOk || !moIdOk || !measIntervalOk {
-				logger.Info("No metrics found for moId=%s measType=%s measId=%s measInterval=%s", moId, measId, measType, measInterval)
+				app.Logger.Info("No metrics found for moId=%s measType=%s measId=%s measInterval=%s", moId, measId, measType, measInterval)
 				continue
 			}
-			logger.Info("Parsed measurement: moId=%s type=%s id=%s interval=%s", moId, measType, measId, measInterval)
+			app.Logger.Info("Parsed measurement: moId=%s type=%s id=%s interval=%s", moId, measType, measId, measInterval)
 
-			parseMetricsRules(metrics.([]interface{}), appMetrics, moId, measType, measId, measInterval)
+			v.ParseMetricsRules(metrics.([]interface{}), appMetrics, moId, measType, measId, measInterval)
 		}
 	}
 	return appMetrics
@@ -163,7 +149,7 @@ func parseMetricsFromDescriptor(descriptor []byte, appMetrics AppMetrics) AppMet
 // of the following format:
 //    { "name": xxx, "objectName": yyy, "objectInstance": zzz }
 // Entries, which do not have all the necessary fields, are ignored.
-func parseMetricsRules(metricsMap []interface{}, appMetrics AppMetrics, moId, measType, measId, measInterval string) AppMetrics {
+func (v *VespaMgr) ParseMetricsRules(metricsMap []interface{}, appMetrics AppMetrics, moId, measType, measId, measInterval string) AppMetrics {
 	for _, element := range metricsMap {
 		name, nameOk := element.(map[string]interface{})["name"].(string)
 		if nameOk {
@@ -173,17 +159,17 @@ func parseMetricsRules(metricsMap []interface{}, appMetrics AppMetrics, moId, me
 			counterId, counterIdOk := element.(map[string]interface{})["counterId"].(string)
 			if !alreadyFound && objectNameOk && objectInstanceOk && counterIdOk {
 				appMetrics[name] = AppMetricsStruct{moId, measType, measId, measInterval, objectName, objectInstance, counterId}
-				logger.Info("Parsed counter name=%s %s/%s  M%sC%s", name, objectName, objectInstance, measId, counterId)
+				app.Logger.Info("Parsed counter name=%s %s/%s  M%sC%s", name, objectName, objectInstance, measId, counterId)
 			}
 			if alreadyFound {
-				logger.Info("skipped duplicate counter %s", name)
+				app.Logger.Info("skipped duplicate counter %s", name)
 			}
 		}
 	}
 	return appMetrics
 }
 
-func getRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) bool {
+func (v *VespaMgr) GetRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) bool {
 	makeRule := func(expr string, value AppMetricsStruct) MetricRule {
 		return MetricRule{
 			Target:         "AdditionalObjects",
@@ -200,14 +186,14 @@ func getRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) bool {
 		}
 	}
 	appMetrics := make(AppMetrics)
-	metrics := parseMetricsFromDescriptor(xAppConfig, appMetrics)
+	metrics := v.ParseMetricsFromDescriptor(xAppConfig, appMetrics)
 
-	if pltFile := os.Getenv("VESMGR_PLT_CFG_FILE"); pltFile	!= "" {
+	if pltFile := os.Getenv("VESMGR_PLT_CFG_FILE"); pltFile != "" {
 		pltConfig, err := ioutil.ReadFile(pltFile)
 		if err != nil {
-			logger.Error("Unable to read platform config file: %v", err)
+			app.Logger.Error("Unable to read platform config file: %v", err)
 		} else {
-			metrics = parseMetricsFromDescriptor(pltConfig, metrics)
+			metrics = v.ParseMetricsFromDescriptor(pltConfig, metrics)
 		}
 	}
 
@@ -216,46 +202,33 @@ func getRules(vespaconf *VESAgentConfiguration, xAppConfig []byte) bool {
 		vespaconf.Measurement.Prometheus.Rules.Metrics = append(vespaconf.Measurement.Prometheus.Rules.Metrics, makeRule(key, value))
 	}
 	if len(vespaconf.Measurement.Prometheus.Rules.Metrics) == 0 {
-		logger.Info("vespa config with empty metrics")
+		app.Logger.Info("vespa config with empty metrics")
 	}
 
 	return len(vespaconf.Measurement.Prometheus.Rules.Metrics) > 0
 }
 
-func getCollectorConfiguration(vespaconf *VESAgentConfiguration) {
-	vespaconf.PrimaryCollector.User = os.Getenv("VESMGR_PRICOLLECTOR_USER")
-	vespaconf.PrimaryCollector.Password = os.Getenv("VESMGR_PRICOLLECTOR_PASSWORD")
-	vespaconf.PrimaryCollector.PassPhrase = os.Getenv("VESMGR_PRICOLLECTOR_PASSPHRASE")
-	vespaconf.PrimaryCollector.FQDN = os.Getenv("VESMGR_PRICOLLECTOR_ADDR")
-	vespaconf.PrimaryCollector.ServerRoot = os.Getenv("VESMGR_PRICOLLECTOR_SERVERROOT")
-	vespaconf.PrimaryCollector.Topic = os.Getenv("VESMGR_PRICOLLECTOR_TOPIC")
-	portStr := os.Getenv("VESMGR_PRICOLLECTOR_PORT")
-
-	if portStr == "" {
-		vespaconf.PrimaryCollector.Port = 8443
-	} else {
-		port, _ := strconv.Atoi(portStr)
-		vespaconf.PrimaryCollector.Port = port
-	}
-
-	secureStr := os.Getenv("VESMGR_PRICOLLECTOR_SECURE")
-	if secureStr == "true" {
-		vespaconf.PrimaryCollector.Secure = true
-	} else {
-		vespaconf.PrimaryCollector.Secure = false
-	}
+func (v *VespaMgr) GetCollectorConfiguration(vespaconf *VESAgentConfiguration) {
+	vespaconf.PrimaryCollector.User = app.Config.GetString("controls.collector.primaryUser")
+	vespaconf.PrimaryCollector.Password = app.Config.GetString("controls.collector.primaryPassword")
+	vespaconf.PrimaryCollector.PassPhrase = ""
+	vespaconf.PrimaryCollector.FQDN = app.Config.GetString("controls.collector.primaryAddr")
+	vespaconf.PrimaryCollector.ServerRoot = app.Config.GetString("controls.collector.serverRoot")
+	vespaconf.PrimaryCollector.Topic = ""
+	vespaconf.PrimaryCollector.Port = app.Config.GetInt("controls.collector.primaryPort")
+	vespaconf.PrimaryCollector.Secure = app.Config.GetBool("controls.collector.secure")
 }
 
-func createVespaConfig(writer io.Writer, xAppStatus []byte) {
-	vespaconf := basicVespaConf()
+func (v *VespaMgr) CreateConfig(writer io.Writer, xAppStatus []byte) {
+	vespaconf := v.BasicVespaConf()
 
-	getRules(&vespaconf, xAppStatus)
+	v.GetRules(&vespaconf, xAppStatus)
 
-	getCollectorConfiguration(&vespaconf)
+	v.GetCollectorConfiguration(&vespaconf)
 
 	err := yaml.NewEncoder(writer).Encode(vespaconf)
 	if err != nil {
-		logger.Error("Cannot write vespa conf file: %s", err.Error())
+		app.Logger.Error("Cannot write vespa conf file: %s", err.Error())
 		return
 	}
 }

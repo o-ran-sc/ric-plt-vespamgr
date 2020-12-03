@@ -19,16 +19,31 @@
 #   platform project (RICP).
 #
 
+# Install RMR from deb packages at packagecloud.io
+rmr=rmr_4.4.4_amd64.deb
+wget --content-disposition  https://packagecloud.io/o-ran-sc/staging/packages/debian/stretch/$rmr/download.deb
+sudo dpkg -i $rmr
+rm $rmr
+rmrdev=rmr-dev_4.4.4_amd64.deb
+wget --content-disposition https://packagecloud.io/o-ran-sc/staging/packages/debian/stretch/$rmrdev/download.deb
+sudo dpkg -i $rmrdev
+rm $rmrdev
 
-set -e
-set -x
-# Load modules
-GO111MODULE=on go mod download
+# Required to find nng and rmr libs
+export LD_LIBRARY_PATH=/usr/local/lib
+
+# Go install, build, etc
 export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+export PATH=$GOPATH/bin:$PATH
+
+# xApp-framework stuff
+export CFG_FILE=../../config/config-file-ut.json
+export RMR_SEED_RT=../../config/uta_rtg.rt
+
+GO111MODULE=on GO_ENABLED=0 GOOS=linux
 
 # Run vesmgr UT
-go test ./...
+go test -v -p 1 -cover -coverprofile=coverage.out ./...
 
 # setup version tag
 if [ -f container-tag.yaml ]
@@ -41,6 +56,4 @@ fi
 hash=$(git rev-parse --short HEAD || true)
 
 # Install vesmgr
-go install -ldflags "-X main.Version=$tag -X main.Hash=$hash" -v ./cmd/vesmgr
-
-
+go install -ldflags "-X main.Version=$tag -X main.Hash=$hash" -v ./cmd/vespamgr
