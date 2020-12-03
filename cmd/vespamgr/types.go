@@ -25,6 +25,22 @@ import (
 	"time"
 )
 
+type VespaMgr struct {
+	rmrReady             bool
+	vesAgent             *CommandRunner
+	chVesagent           chan error
+	appmgrHost           string
+	appmgrUrl            string
+	appmgrNotifUrl       string
+	appmgrSubsUrl        string
+	appmgrRetry          int
+	hbInterval           string
+	measInterval         string
+	prometheusAddr       string
+	alertManagerBindAddr string
+	subscriptionId       string
+}
+
 // Structs are copied from https://github.com/nokia/ONAP-VESPA/tree/master/ves-agent/config
 // and from https://github.com/nokia/ONAP-VESPA/blob/master/govel/config.go
 // Using tag v0.3.0
@@ -115,3 +131,20 @@ type VESAgentConfiguration struct {
 	CaCert           string                   `yaml:"caCert,omitempty"` // Root certificate content
 	DataDir          string                   `yaml:"datadir"`          // Path to directory containing data
 }
+
+// AppMetricsStruct contains xapplication metrics definition
+type AppMetricsStruct struct {
+	MoId           string
+	MeasType       string
+	MeasId         string
+	MeasInterval   string
+	ObjectName     string
+	ObjectInstance string
+	CounterId      string
+}
+
+// AppMetrics contains metrics definitions for all Xapps
+type AppMetrics map[string]AppMetricsStruct
+
+var Version string
+var Hash string
