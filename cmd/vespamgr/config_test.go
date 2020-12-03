@@ -23,7 +23,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"os"
 	"testing"
 	"time"
 
@@ -31,7 +30,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var vespaMgr *VespaMgr
+
 func testBaseConf(t *testing.T, vesconf VESAgentConfiguration) {
+	vespaMgr = NewVespaMgr()
+
 	assert.Equal(t, "/tmp/data", vesconf.DataDir)
 	assert.False(t, vesconf.Debug)
 	assert.Equal(t, vesconf.Event.MaxMissed, 2)
@@ -48,87 +51,13 @@ func testBaseConf(t *testing.T, vesconf VESAgentConfiguration) {
 }
 
 func TestBasicConfigContainsCorrectValues(t *testing.T) {
-	vesconf := basicVespaConf()
+	vesconf := vespaMgr.BasicVespaConf()
 	testBaseConf(t, vesconf)
-}
-
-func TestBasicConfigContainsCorrectVNFName(t *testing.T) {
-	os.Setenv("VESMGR_VNFNAME", "VNF-111")
-	os.Setenv("VESMGR_NFNAMINGCODE", "code55")
-	vesconf := basicVespaConf()
-	assert.Equal(t, vesconf.Event.VNFName, "VNF-111")
-	assert.Equal(t, vesconf.Event.NfNamingCode, "code55")
-	os.Unsetenv("VESMGR_VNFNAME")
-	os.Unsetenv("VESMGR_NFNAMINGCODE")
-}
-
-func TestCollectorConfiguration(t *testing.T) {
-	os.Unsetenv("VESMGR_VNFNAME")
-	os.Unsetenv("VESMGR_NFNAMINGCODE")
-	os.Setenv("VESMGR_PRICOLLECTOR_USER", "user123")
-	os.Setenv("VESMGR_PRICOLLECTOR_PASSWORD", "pass123")
-	os.Setenv("VESMGR_PRICOLLECTOR_PASSPHRASE", "phrase123")
-	os.Setenv("VESMGR_PRICOLLECTOR_ADDR", "1.2.3.4")
-	os.Setenv("VESMGR_PRICOLLECTOR_PORT", "1234")
-	os.Setenv("VESMGR_PRICOLLECTOR_SERVERROOT", "vescollector")
-	os.Setenv("VESMGR_PRICOLLECTOR_TOPIC", "sometopic")
-	os.Setenv("VESMGR_PRICOLLECTOR_SECURE", "true")
-
-	vesconf := basicVespaConf()
-	getCollectorConfiguration(&vesconf)
-
-	assert.Equal(t, "user123", vesconf.PrimaryCollector.User)
-	assert.Equal(t, "pass123", vesconf.PrimaryCollector.Password)
-	assert.Equal(t, "phrase123", vesconf.PrimaryCollector.PassPhrase)
-	assert.Equal(t, "1.2.3.4", vesconf.PrimaryCollector.FQDN)
-	assert.Equal(t, 1234, vesconf.PrimaryCollector.Port)
-	assert.Equal(t, "vescollector", vesconf.PrimaryCollector.ServerRoot)
-	assert.Equal(t, "sometopic", vesconf.PrimaryCollector.Topic)
-	assert.True(t, vesconf.PrimaryCollector.Secure)
-}
-
-func TestCollectorConfigurationWhenEnvironmentVariablesAreNotDefined(t *testing.T) {
-	os.Unsetenv("VESMGR_VNFNAME")
-	os.Unsetenv("VESMGR_NFNAMINGCODE")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_USER")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_PASSWORD")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_PASSPHRASE")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_ADDR")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_PORT")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_SERVERROOT")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_TOPIC")
-	os.Unsetenv("VESMGR_PRICOLLECTOR_SECURE")
-
-	vesconf := basicVespaConf()
-	getCollectorConfiguration(&vesconf)
-
-	assert.Equal(t, "", vesconf.PrimaryCollector.User)
-	assert.Equal(t, "", vesconf.PrimaryCollector.Password)
-	assert.Equal(t, "", vesconf.PrimaryCollector.PassPhrase)
-	assert.Equal(t, "", vesconf.PrimaryCollector.FQDN)
-	assert.Equal(t, 8443, vesconf.PrimaryCollector.Port)
-	assert.Equal(t, "", vesconf.PrimaryCollector.ServerRoot)
-	assert.Equal(t, "", vesconf.PrimaryCollector.Topic)
-	assert.False(t, vesconf.PrimaryCollector.Secure)
-}
-
-func TestCollectorConfigurationWhenPrimaryCollectorPortIsNotInteger(t *testing.T) {
-	os.Setenv("VESMGR_PRICOLLECTOR_PORT", "abcd")
-	vesconf := basicVespaConf()
-	getCollectorConfiguration(&vesconf)
-	assert.Equal(t, 0, vesconf.PrimaryCollector.Port)
-}
-
-func TestCollectorConfigurationWhenPrimaryCollectorSecureIsNotTrueOrFalse(t *testing.T) {
-	os.Setenv("VESMGR_PRICOLLECTOR_SECURE", "foo")
-	vesconf := basicVespaConf()
-	getCollectorConfiguration(&vesconf)
-	assert.False(t, vesconf.PrimaryCollector.Secure)
 }
 
 func TestYamlGenerationWithoutXAppsConfig(t *testing.T) {
 	buffer := new(bytes.Buffer)
-	createVespaConfig(buffer, []byte{})
+	vespaMgr.CreateConfig(buffer, []byte{})
 	var vesconf VESAgentConfiguration
 	err := yaml.Unmarshal(buffer.Bytes(), &vesconf)
 	assert.Nil(t, err)
@@ -140,7 +69,7 @@ func TestYamlGenerationWithXAppsConfig(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	bytes, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
 	assert.Nil(t, err)
-	createVespaConfig(buffer, bytes)
+	vespaMgr.CreateConfig(buffer, bytes)
 	var vesconf VESAgentConfiguration
 	err = yaml.Unmarshal(buffer.Bytes(), &vesconf)
 	assert.Nil(t, err)
@@ -165,7 +94,7 @@ func TestParseMetricsRules(t *testing.T) {
 			{ "name": "ricxapp_SDL_StoreError", "objectName": "ricxappSDLStoreErrorCounter", "objectInstance": "ricxappSDLStoreError", "counterId": "0011" } ]}`
 	appMetrics := make(AppMetrics)
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 6)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRTransmitErrorCounter", appMetrics["ricxapp_RMR_TransmitError"].ObjectName)
@@ -176,7 +105,7 @@ func TestParseMetricsRulesNoMetrics(t *testing.T) {
 	appMetrics := make(AppMetrics)
 	metricsJSON := `{"metrics": []`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Empty(t, appMetrics)
 }
 
@@ -185,7 +114,7 @@ func TestParseMetricsRulesAdditionalFields(t *testing.T) {
 	metricsJSON := `{"metrics": [
 			{ "additionalField": "valueIgnored", "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounter", "objectInstance": "ricxappRMRReceived", "counterId": "0011" }]}`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 1)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
@@ -198,7 +127,7 @@ func TestParseMetricsRulesMissingFields(t *testing.T) {
 			{ "name": "ricxapp_RMR_ReceiveError", "objectInstance": "ricxappRMRReceiveError" },
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" }]}`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRTransmittedCounter", appMetrics["ricxapp_RMR_Transmitted"].ObjectName)
@@ -213,7 +142,7 @@ func TestParseMetricsRulesDuplicateDefinitionIsIgnored(t *testing.T) {
 			{ "name": "ricxapp_RMR_Received", "objectName": "ricxappRMRreceivedCounterXXX", "objectInstance": "ricxappRMRReceivedXXX", "counterId": "0011" },
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" }]}`
 	m := metricsStringToInterfaceArray(metricsJSON)
-	appMetrics = parseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
@@ -227,8 +156,8 @@ func TestParseMetricsRulesIncrementalFillOfAppMetrics(t *testing.T) {
 			{ "name": "ricxapp_RMR_Transmitted", "objectName": "ricxappRMRTransmittedCounter", "objectInstance": "ricxappRMRTransmitted", "counterId": "0011" }]}`
 	m1 := metricsStringToInterfaceArray(metricsJSON1)
 	m2 := metricsStringToInterfaceArray(metricsJSON2)
-	appMetrics = parseMetricsRules(m1, appMetrics, "SEP/XAPP", "X2", "1234", "60")
-	appMetrics = parseMetricsRules(m2, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m1, appMetrics, "SEP/XAPP", "X2", "1234", "60")
+	appMetrics = vespaMgr.ParseMetricsRules(m2, appMetrics, "SEP/XAPP", "X2", "1234", "60")
 	assert.Len(t, appMetrics, 2)
 	assert.Equal(t, "ricxappRMRreceivedCounter", appMetrics["ricxapp_RMR_Received"].ObjectName)
 	assert.Equal(t, "ricxappRMRReceived", appMetrics["ricxapp_RMR_Received"].ObjectInstance)
@@ -239,7 +168,7 @@ func TestParseXAppDescriptor(t *testing.T) {
 	bytes, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
 	assert.Nil(t, err)
 
-	appMetrics = parseMetricsFromDescriptor(bytes, appMetrics)
+	appMetrics = vespaMgr.ParseMetricsFromDescriptor(bytes, appMetrics)
 	assert.Len(t, appMetrics, 4)
 	assert.Equal(t, "App1ExampleCounterOneObject", appMetrics["App1ExampleCounterOne"].ObjectName)
 	assert.Equal(t, "App1ExampleCounterOneObjectInstance", appMetrics["App1ExampleCounterOne"].ObjectInstance)
@@ -256,7 +185,7 @@ func TestParseXAppDescriptorWithNoConfig(t *testing.T) {
 	                 {{"metadata": "something", "descriptor": "somethingelse"}}]`
 	metricsBytes := []byte(metricsJSON)
 	appMetrics := make(AppMetrics)
-	appMetrics = parseMetricsFromDescriptor(metricsBytes, appMetrics)
+	appMetrics = vespaMgr.ParseMetricsFromDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)
 }
 
@@ -265,6 +194,6 @@ func TestParseXAppDescriptorWithNoMetrics(t *testing.T) {
 	                 {{"metadata": "something", "descriptor": "somethingelse", "config":{}}}]`
 	metricsBytes := []byte(metricsJSON)
 	appMetrics := make(AppMetrics)
-	appMetrics = parseMetricsFromDescriptor(metricsBytes, appMetrics)
+	appMetrics = vespaMgr.ParseMetricsFromDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)
 }

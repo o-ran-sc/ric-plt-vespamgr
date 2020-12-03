@@ -1,0 +1,41 @@
+{
+    "local": {
+        "host": ":8080"
+    },
+    "logger": {
+        "level": 4
+    },
+    "db": {
+        "namespaces": ["sdl", "rnib"]
+    },
+    "rmr": {
+        "protPort": "tcp:4560",
+        "maxSize": 1024,
+        "numWorkers": 1
+    },
+    "controls": {
+        "appManager": {
+            "host": "http://service-ricplt-appmgr-http.ricplt.svc.cluster.local:8080",
+            "path": "/ric/v1/config",
+            "notificationUrl": "/ric/v1/xappnotif",
+            "subscriptionUrl": "/ric/v1/subscriptions",
+            "appmgrRetry": 100
+        },
+        "vesagent": {
+            "configFile": "/etc/ves-agent/ves-agent.yaml",
+            "hbInterval": "60s",
+            "measInterval": "30s",
+            "prometheusAddr": "http://infra-cpro-server:80",
+            "alertManagerBindAddr": ":9095"
+        },
+        "collector": {
+            "primaryAddr": "pod-ves-simulator",
+            "secondaryAddr": "pod-ves-simulator",
+            "serverRoot": "0",
+            "primaryPort": 8443,
+            "primaryUser": "sample1",
+            "primaryPassword": "sample1",
+            "secure": false
+        }
+    }
+}
