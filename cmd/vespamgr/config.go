@@ -188,8 +188,8 @@ func (v *VespaMgr) GetRules(vespaconf *VESAgentConfiguration, xAppConfig []byte)
 	appMetrics := make(AppMetrics)
 	metrics := v.ParseMetricsFromDescriptor(xAppConfig, appMetrics)
 
-	if pltFile := os.Getenv("VESMGR_PLT_CFG_FILE"); pltFile != "" {
-		pltConfig, err := ioutil.ReadFile(pltFile)
+	if v.pltFileCreated {
+		pltConfig, err := ioutil.ReadFile(app.Config.GetString("controls.pltFile"))
 		if err != nil {
 			app.Logger.Error("Unable to read platform config file: %v", err)
 		} else {
@@ -221,9 +221,7 @@ func (v *VespaMgr) GetCollectorConfiguration(vespaconf *VESAgentConfiguration) {
 
 func (v *VespaMgr) CreateConfig(writer io.Writer, xAppStatus []byte) {
 	vespaconf := v.BasicVespaConf()
-
 	v.GetRules(&vespaconf, xAppStatus)
-
 	v.GetCollectorConfiguration(&vespaconf)
 
 	err := yaml.NewEncoder(writer).Encode(vespaconf)

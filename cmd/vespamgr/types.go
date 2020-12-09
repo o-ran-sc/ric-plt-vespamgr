@@ -39,6 +39,7 @@ type VespaMgr struct {
 	prometheusAddr       string
 	alertManagerBindAddr string
 	subscriptionId       string
+	pltFileCreated       bool
 }
 
 // Structs are copied from https://github.com/nokia/ONAP-VESPA/tree/master/ves-agent/config

@@ -54,6 +54,7 @@
         },
         "host": "localhost:8080",
         "measurementUrl": "/ric/v1/measurements",
+        "pltFile": "/tmp/vespa-plt-meas.json",
         "appManager": {
             "host": "http://localhost:8080",
             "path": "/ric/v1/config",

@@ -54,12 +54,13 @@
         },
         "host": "http://service-ricplt-vespamgr-http.ricplt.svc.cluster.local:8080",
         "measurementUrl": "/ric/v1/measurements",
+        "pltFile": "/tmp/vespa-plt-meas.json",
         "appManager": {
             "host": "http://service-ricplt-appmgr-http.ricplt.svc.cluster.local:8080",
             "path": "/ric/v1/config",
             "notificationUrl": "/ric/v1/xappnotif",
             "subscriptionUrl": "/ric/v1/subscriptions",
-            "appmgrRetry": 2
+            "appmgrRetry": 100
         },
         "vesagent": {
             "configFile": "/etc/ves-agent/ves-agent.yaml",

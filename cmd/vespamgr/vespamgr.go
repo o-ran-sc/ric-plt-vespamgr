@@ -144,9 +144,11 @@ func (v *VespaMgr) HandleSupervision(w http.ResponseWriter, r *http.Request) {
 }
 
 func (v *VespaMgr) HandleMeasurements(w http.ResponseWriter, r *http.Request) {
-	app.Logger.Info("HandleMeasurements called!")
 	if appConfig, err := v.ReadPayload(w, r); err == nil {
-		v.CreateConf(app.Config.GetString("controls.vesagent.configFile"), appConfig)
+		filePath := app.Config.GetString("controls.pltFile")
+		if err := ioutil.WriteFile(filePath, appConfig, 0666); err == nil {
+			v.pltFileCreated = true
+		}
 	}
 }
 
@@ -190,9 +192,8 @@ func (v *VespaMgr) SubscribeXappNotif(appmgrUrl string) {
 	targetUrl := fmt.Sprintf("%s%s", app.Config.GetString("controls.host"), v.appmgrNotifUrl)
 	subscriptionData := []byte(fmt.Sprintf(`{"Data": {"maxRetries": 5, "retryTimer": 5, "eventType":"all", "targetUrl": "%v"}}`, targetUrl))
 
-	for {
+	for i := 0; i < v.appmgrRetry; i++ {
 		app.Logger.Info("Subscribing xApp notification from: %v", appmgrUrl)
-
 		if id := v.DoSubscribe(appmgrUrl, subscriptionData); id != "" {
 			app.Logger.Info("Subscription done, id=%s", id)
 			break
