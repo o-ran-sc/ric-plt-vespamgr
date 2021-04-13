@@ -169,12 +169,19 @@ func (suite *VespaMgrTestSuite) TestCreateConf() {
 }
 
 func (suite *VespaMgrTestSuite) TestHandleMeasurements() {
-        data, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
-        suite.Nil(err)
+	data, err := ioutil.ReadFile("../../test/xApp_config_test_output.json")
+	suite.Nil(err)
 
-        pbodyEn, _ := json.Marshal(data)
-        req, _ := http.NewRequest("POST", "/ric/v1/measurements", bytes.NewBuffer(pbodyEn))
-        handleFunc := http.HandlerFunc(suite.vespaMgr.HandleMeasurements)
+	pbodyEn, _ := json.Marshal(data)
+	req, _ := http.NewRequest("POST", "/ric/v1/measurements", bytes.NewBuffer(pbodyEn))
+	handleFunc := http.HandlerFunc(suite.vespaMgr.HandleMeasurements)
 	response := executeRequest(req, handleFunc)
-        suite.Equal(http.StatusOK, response.Code)
+	suite.Equal(http.StatusOK, response.Code)
+}
+
+func (suite *VespaMgrTestSuite) TestSymptomDataHandler() {
+	req, _ := http.NewRequest("GET", "/ric/v1/symptomdata", nil)
+	handleFunc := http.HandlerFunc(suite.vespaMgr.SymptomDataHandler)
+	resp := executeRequest(req, handleFunc)
+	suite.Equal(http.StatusOK, resp.Code)
 }

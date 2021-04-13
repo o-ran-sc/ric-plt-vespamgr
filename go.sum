@@ -7,6 +7,8 @@ gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm v0.4.0 h1:Uvyfuq2jyb1aosy2BEzH1
 gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm v0.4.0/go.mod h1:AdEWKtERGvOQy9ybLhyhrb9w9LLVn8i9xzTwoR5n4BY=
 gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm v0.4.2 h1:XNfkp3PwZ7pfkPszX7NaX6DzToCGjcWTLbIHYqCFNu0=
 gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm v0.4.2/go.mod h1:AdEWKtERGvOQy9ybLhyhrb9w9LLVn8i9xzTwoR5n4BY=
+gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm v0.5.0 h1:OKDsIDlttbaoHwleyjflIWVZPgPvYbDhim6gWF0zf5E=
+gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm v0.5.0/go.mod h1:AdEWKtERGvOQy9ybLhyhrb9w9LLVn8i9xzTwoR5n4BY=
 gerrit.o-ran-sc.org/r/ric-plt/nodeb-rnib.git/common v1.0.21 h1:eK9nUZOTMJ/EnMpH9bkWtMgOvCn3u4+PNCb9gu10s6w=
 gerrit.o-ran-sc.org/r/ric-plt/nodeb-rnib.git/common v1.0.21/go.mod h1:QJ1uPPZosGbhxUWpUpeM5fLqFHdnWTrVnvW2DgyOCes=
 gerrit.o-ran-sc.org/r/ric-plt/nodeb-rnib.git/common v1.0.35 h1:TGXHb4DNY8on+ej4S9VUnk2HibIC/5chDy64OE+bQBQ=
@@ -27,6 +29,8 @@ gerrit.o-ran-sc.org/r/ric-plt/xapp-frame.git v0.4.4 h1:aUsIGYCHYsNX0pQxLL+sLTOzB
 gerrit.o-ran-sc.org/r/ric-plt/xapp-frame.git v0.4.4/go.mod h1:29CdUcCrNEqVBjQWAlgeGrYxSWqSZ4e67xzhuSf6BkI=
 gerrit.o-ran-sc.org/r/ric-plt/xapp-frame.git v0.6.7 h1:lTURRbfaV0kPcplGF7jyowRXoUkNknRzd7Y51ZPs5PI=
 gerrit.o-ran-sc.org/r/ric-plt/xapp-frame.git v0.6.7/go.mod h1:fpHeoGISAkz6bNfgZtq8Ycg9i9KdGgUBP2jLs6TGk2g=
+gerrit.o-ran-sc.org/r/ric-plt/xapp-frame.git v0.8.1 h1:kpeENcE4eaipw62MlS6xUpJ8RflqTWLOFKV3OwjZxic=
+gerrit.o-ran-sc.org/r/ric-plt/xapp-frame.git v0.8.1/go.mod h1:MRTeTBLROgTA2t91SXYjTbRsxoOhMMvvkK/ChLVRZUU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/PuerkitoBio/purell v1.1.0/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=

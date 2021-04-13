@@ -59,11 +59,25 @@ func (v *VespaMgr) Run(sdlcheck, runXapp bool) {
 	app.Resource.InjectRoute(v.appmgrNotifUrl, v.HandlexAppNotification, "POST")
 	app.Resource.InjectRoute(measUrl, v.HandleMeasurements, "POST")
 	app.Resource.InjectRoute("/supervision", v.HandleSupervision, "GET") // @todo: remove this
+	app.Resource.InjectRoute("/ric/v1/symptomdata", v.SymptomDataHandler, "GET")
 
 	go v.SubscribeXappNotif(fmt.Sprintf("%s%s", v.appmgrHost, v.appmgrSubsUrl))
 
 	if runXapp {
 		app.RunWithParams(v, sdlcheck)
+	}
+}
+
+func (v *VespaMgr) SymptomDataHandler(w http.ResponseWriter, r *http.Request) {
+	appConfig, err := ioutil.ReadFile(app.Config.GetString("controls.vesagent.configFile"))
+	if err != nil {
+		app.Logger.Error("Unable to read config file: %v", err)
+	}
+	app.Logger.Info("SymptomDataHandler: appConfig=%+v", string(appConfig))
+
+	baseDir := app.Resource.CollectDefaultSymptomData("app-config.json", appConfig)
+	if baseDir != "" {
+		app.Resource.SendSymptomDataFile(w, r, baseDir, "symptomdata.zip")
 	}
 }
 
