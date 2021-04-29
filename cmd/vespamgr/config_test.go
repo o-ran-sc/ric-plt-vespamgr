@@ -210,3 +210,23 @@ func TestParseXAppDescriptorWithNoMetrics(t *testing.T) {
 	appMetrics = vespaMgr.ParseMetricsFromDescriptor(metricsBytes, appMetrics)
 	assert.Empty(t, appMetrics)
 }
+
+func TestYamlGenerationWithPlatformConfig(t *testing.T) {
+	buffer := new(bytes.Buffer)
+	bytes, err := ioutil.ReadFile("../../config/plt-counter.json")
+	assert.Nil(t, err)
+	vespaMgr.CreateConfig(buffer, bytes)
+	var vesconf VESAgentConfiguration
+	err = yaml.Unmarshal(buffer.Bytes(), &vesconf)
+	assert.Nil(t, err)
+	testBaseConf(t, vesconf)
+	assert.Len(t, vesconf.Measurement.Prometheus.Rules.Metrics, 40)
+}
+
+func TestParsePlatformConfigWithNoMetrices(t *testing.T) {
+	metricsBytes,err := ioutil.ReadFile("../../test/plt-counter_no_metrices.json")
+	assert.Nil(t, err)
+	appMetrics := make(AppMetrics)
+	appMetrics = vespaMgr.ParseMetricsFromDescriptor(metricsBytes, appMetrics)
+	assert.Empty(t, appMetrics)
+}

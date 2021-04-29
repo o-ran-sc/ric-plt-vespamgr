@@ -1,0 +1,15 @@
+[
+    {
+        "metadata": { },
+        "descriptor": { },
+        "config": {
+            "local": {
+                "host": ":8080"
+            },
+            "logger": {
+                "level": 5
+            } 
+        }
+    }
+
+]
