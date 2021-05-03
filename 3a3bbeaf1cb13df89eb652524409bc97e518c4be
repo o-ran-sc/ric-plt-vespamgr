@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f414d14_2d74e98f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2021-05-03T09:19:28Z",
+      "side": 1,
+      "message": "I think commit subject does not match with commit intension as commit is related to add test cases.",
+      "revId": "3a3bbeaf1cb13df89eb652524409bc97e518c4be",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
