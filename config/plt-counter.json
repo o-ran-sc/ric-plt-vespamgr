@@ -17,372 +17,372 @@
                     "measInterval": "60",
                     "metrics": [
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceUpdateFailure='Bytes'}",
-                            "objectName": "E2T_RICserviceUpdateFailure_Bytes",
-                            "objectInstance": "E2T_RICserviceUpdateFailure_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceUpdateFailure='Bytes'}",
+                            "objectName": "E2TAlpha_RICserviceUpdateFailure_Bytes",
+                            "objectInstance": "E2TAlpha_RICserviceUpdateFailure_Bytes",
                             "counterId": "0010",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICserviceUpdateFailure_Bytes"
+                            "description": "E2TAlpha counter E2T_RICserviceUpdateFailure_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceUpdateFailure='Messages'}",
-                            "objectName": "E2T_RICserviceUpdateFailure_Messages",
-                            "objectInstance": "E2T_RICserviceUpdateFailure_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceUpdateFailure='Messages'}",
+                            "objectName": "E2TAlpha_RICserviceUpdateFailure_Messages",
+                            "objectInstance": "E2TAlpha_RICserviceUpdateFailure_Messages",
                             "counterId": "0011",
                             "type": "counter",
-                            "description": "E2T counter RICserviceUpdateFailure_Messages"
+                            "description": "E2TAlpha counter RICserviceUpdateFailure_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',SetupRequestFailure='Bytes'}",
-                            "objectName": "E2T_SetupRequestFailure_Bytes",
-                            "objectInstance": "E2T_SetupRequestFailure_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',SetupRequestFailure='Bytes'}",
+                            "objectName": "E2TAlpha_SetupRequestFailure_Bytes",
+                            "objectInstance": "E2TAlpha_SetupRequestFailure_Bytes",
                             "counterId": "0012",
                             "type": "counter",
-                            "description": "E2T counter E2T_SetupRequestFailure_Bytes"
+                            "description": "E2TAlpha counter E2T_SetupRequestFailure_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',SetupRequestFailure='Messages'}",
-                            "objectName": "E2T_SetupRequestFailure_Messages",
-                            "objectInstance": "E2T_SetupRequestFailure_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',SetupRequestFailure='Messages'}",
+                            "objectName": "E2TAlpha_SetupRequestFailure_Messages",
+                            "objectInstance": "E2TAlpha_SetupRequestFailure_Messages",
                             "counterId": "0013",
                             "type": "counter",
-                            "description": "E2T counter SetupRequestFailure_Messages"
+                            "description": "E2TAlpha counter SetupRequestFailure_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetACK='Bytes'}",
-                            "objectName": "E2T_ResetACK_Bytes",
-                            "objectInstance": "E2T_ResetACK_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetACK='Bytes'}",
+                            "objectName": "E2TAlpha_ResetACK_Bytes",
+                            "objectInstance": "E2TAlpha_ResetACK_Bytes",
                             "counterId": "0014",
                             "type": "counter",
-                            "description": "E2T counter E2T_ResetACK_Bytes"
+                            "description": "E2TAlpha counter E2T_ResetACK_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',SetupResponse='Bytes'}",
-                            "objectName": "E2T_SetupResponse_Bytes",
-                            "objectInstance": "E2T_SetupResponse_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',SetupResponse='Bytes'}",
+                            "objectName": "E2TAlpha_SetupResponse_Bytes",
+                            "objectInstance": "E2TAlpha_SetupResponse_Bytes",
                             "counterId": "0015",
                             "type": "counter",
-                            "description": "E2T counter E2T_SetupResponse_Bytes"
+                            "description": "E2TAlpha counter E2T_SetupResponse_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICcontrolACK='Bytes'}",
-                            "objectName": "E2T_RICcontrolACK_Bytes",
-                            "objectInstance": "E2T_RICcontrolACK_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICcontrolACK='Bytes'}",
+                            "objectName": "E2TAlpha_RICcontrolACK_Bytes",
+                            "objectInstance": "E2TAlpha_RICcontrolACK_Bytes",
                             "counterId": "0016",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICcontrolACK_Bytes"
+                            "description": "E2TAlpha counter E2T_RICcontrolACK_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ErrorIndication='Messages'}",
-                            "objectName": "E2T_ErrorIndication_Messages",
-                            "objectInstance": "E2T_ErrorIndication_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',ErrorIndication='Messages'}",
+                            "objectName": "E2TAlpha_ErrorIndication_Messages",
+                            "objectInstance": "E2TAlpha_ErrorIndication_Messages",
                             "counterId": "0017",
                             "type": "counter",
-                            "description": "E2T counter ErrorIndication    _Messages"
+                            "description": "E2TAlpha counter ErrorIndication    _Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetACK='Messages'}",
-                            "objectName": "E2T_ResetACK_Messages",
-                            "objectInstance": "E2T_ResetACK_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetACK='Messages'}",
+                            "objectName": "E2TAlpha_ResetACK_Messages",
+                            "objectInstance": "E2TAlpha_ResetACK_Messages",
                             "counterId": "0018",
                             "type": "counter",
-                            "description": "E2T counter ResetACK_Messages"
+                            "description": "E2TAlpha counter ResetACK_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionACK='Messages'}",
-                            "objectName": "E2T_RICsubscriptionACK_Messages",
-                            "objectInstance": "E2T_RICsubscriptionACK_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionACK='Messages'}",
+                            "objectName": "E2TAlpha_RICsubscriptionACK_Messages",
+                            "objectInstance": "E2TAlpha_RICsubscriptionACK_Messages",
                             "counterId": "0019",
                             "type": "counter",
-                            "description": "E2T counter RICsubscriptionACK_Messages"
+                            "description": "E2TAlpha counter RICsubscriptionACK_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceUpdate='Messages'}",
-                            "objectName": "E2T_RICserviceUpdate_Messages",
-                            "objectInstance": "E2T_RICserviceUpdate_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceUpdate='Messages'}",
+                            "objectName": "E2TAlpha_RICserviceUpdate_Messages",
+                            "objectInstance": "E2TAlpha_RICserviceUpdate_Messages",
                             "counterId": "0020",
                             "type": "counter",
-                            "description": "E2T counter RICserviceUpdate_Messages"
+                            "description": "E2TAlpha counter RICserviceUpdate_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICindication='Messages'}",
-                            "objectName": "E2T_RICindication_Messages",
-                            "objectInstance": "E2T_RICindication_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICindication='Messages'}",
+                            "objectName": "E2TAlpha_RICindication_Messages",
+                            "objectInstance": "E2TAlpha_RICindication_Messages",
                             "counterId": "0021",
                             "type": "counter",
-                            "description": "E2T counter RICindication_Messages"
+                            "description": "E2TAlpha counter RICindication_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICcontrolACK='Messages'}",
-                            "objectName": "E2T_RICcontrolACK_Messages",
-                            "objectInstance": "E2T_RICcontrolACK_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICcontrolACK='Messages'}",
+                            "objectName": "E2TAlpha_RICcontrolACK_Messages",
+                            "objectInstance": "E2TAlpha_RICcontrolACK_Messages",
                             "counterId": "0022",
                             "type": "counter",
-                            "description": "E2T counter RICcontrolACK_Messages"
+                            "description": "E2TAlpha counter RICcontrolACK_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionDelete='Messages'}",
-                            "objectName": "E2T_RICsubscriptionDelete_Messages",
-                            "objectInstance": "E2T_RICsubscriptionDelete_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionDelete='Messages'}",
+                            "objectName": "E2TAlpha_RICsubscriptionDelete_Messages",
+                            "objectInstance": "E2TAlpha_RICsubscriptionDelete_Messages",
                             "counterId": "0023",
                             "type": "counter",
-                            "description": "E2T counter RICsubscriptionDelete_Messages"
+                            "description": "E2TAlpha counter RICsubscriptionDelete_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetACK='Bytes'}",
-                            "objectName": "E2T_ResetACK_Bytes",
-                            "objectInstance": "E2T_ResetACK_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetACK='Bytes'}",
+                            "objectName": "E2TAlpha_ResetACK_Bytes",
+                            "objectInstance": "E2TAlpha_ResetACK_Bytes",
                             "counterId": "0024",
                             "type": "counter",
-                            "description": "E2T counter E2T_ResetACK_Bytes"
+                            "description": "E2TAlpha counter E2T_ResetACK_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceUpdateResponse='Messages'}",
-                            "objectName": "E2T_RICserviceUpdateResponse_Messages",
-                            "objectInstance": "E2T_RICserviceUpdateResponse_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceUpdateResponse='Messages'}",
+                            "objectName": "E2TAlpha_RICserviceUpdateResponse_Messages",
+                            "objectInstance": "E2TAlpha_RICserviceUpdateResponse_Messages",
                             "counterId": "0025",
                             "type": "counter",
-                            "description": "E2T counter RICserviceUpdateResponse_Messages"
+                            "description": "E2TAlpha counter RICserviceUpdateResponse_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',SetupRequest='Messages'}",
-                            "objectName": "E2T_SetupRequest_Messages",
-                            "objectInstance": "E2T_SetupRequest_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',SetupRequest='Messages'}",
+                            "objectName": "E2TAlpha_SetupRequest_Messages",
+                            "objectInstance": "E2TAlpha_SetupRequest_Messages",
                             "counterId": "0026",
                             "type": "counter",
-                            "description": "E2T counter SetupRequest_Messages"
+                            "description": "E2TAlpha counter SetupRequest_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetACK='Messages'}",
-                            "objectName": "E2T_ResetACK_Messages",
-                            "objectInstance": "E2T_ResetACK_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetACK='Messages'}",
+                            "objectName": "E2TAlpha_ResetACK_Messages",
+                            "objectInstance": "E2TAlpha_ResetACK_Messages",
                             "counterId": "0027",
                             "type": "counter",
-                            "description": "E2T counter ResetACK_Messages"
+                            "description": "E2TAlpha counter ResetACK_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetRequest='Bytes'}",
-                            "objectName": "E2T_ResetRequest_Bytes",
-                            "objectInstance": "E2T_ResetRequest_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetRequest='Bytes'}",
+                            "objectName": "E2TAlpha_ResetRequest_Bytes",
+                            "objectInstance": "E2TAlpha_ResetRequest_Bytes",
                             "counterId": "0028",
                             "type": "counter",
-                            "description": "E2T counter E2T_ResetRequest_Bytes"
+                            "description": "E2TAlpha counter E2T_ResetRequest_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ErrorIndication='Bytes'}",
-                            "objectName": "E2T_ErrorIndication_Bytes",
-                            "objectInstance": "E2T_ErrorIndication_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',ErrorIndication='Bytes'}",
+                            "objectName": "E2TAlpha_ErrorIndication_Bytes",
+                            "objectInstance": "E2TAlpha_ErrorIndication_Bytes",
                             "counterId": "0029",
                             "type": "counter",
-                            "description": "E2T counter E2T_ErrorIndication_Bytes"
+                            "description": "E2TAlpha counter E2T_ErrorIndication_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICcontrolFailure='Bytes'}",
-                            "objectName": "E2T_RICcontrolFailure_Bytes",
-                            "objectInstance": "E2T_RICcontrolFailure_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICcontrolFailure='Bytes'}",
+                            "objectName": "E2TAlpha_RICcontrolFailure_Bytes",
+                            "objectInstance": "E2TAlpha_RICcontrolFailure_Bytes",
                             "counterId": "0030",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICcontrolFailure_Bytes"
+                            "description": "E2TAlpha counter E2T_RICcontrolFailure_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionACK='Bytes'}",
-                            "objectName": "E2T_RICsubscriptionACK_Bytes",
-                            "objectInstance": "E2T_RICsubscriptionACK_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionACK='Bytes'}",
+                            "objectName": "E2TAlpha_RICsubscriptionACK_Bytes",
+                            "objectInstance": "E2TAlpha_RICsubscriptionACK_Bytes",
                             "counterId": "0031",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICsubscriptionACK_Bytes"
+                            "description": "E2TAlpha counter E2T_RICsubscriptionACK_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',SetupRequest='Bytes'}",
-                            "objectName": "E2T_SetupRequest_Bytes",
-                            "objectInstance": "E2T_SetupRequest_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',SetupRequest='Bytes'}",
+                            "objectName": "E2TAlpha_SetupRequest_Bytes",
+                            "objectInstance": "E2TAlpha_SetupRequest_Bytes",
                             "counterId": "0032",
                             "type": "counter",
-                            "description": "E2T counter E2T_SetupRequest_Bytes"
+                            "description": "E2TAlpha counter E2T_SetupRequest_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICindication='Bytes'}",
-                            "objectName": "E2T_RICindication_Bytes",
-                            "objectInstance": "E2T_RICindication_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICindication='Bytes'}",
+                            "objectName": "E2TAlpha_RICindication_Bytes",
+                            "objectInstance": "E2TAlpha_RICindication_Bytes",
                             "counterId": "0033",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICindicationBytes"
+                            "description": "E2TAlpha counter E2T_RICindicationBytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionDeleteACK='Messages'}",
-                            "objectName": "E2T_RICsubscriptionDeleteACK_Messages",
-                            "objectInstance": "E2T_RICsubscriptionDeleteACK_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionDeleteACK='Messages'}",
+                            "objectName": "E2TAlpha_RICsubscriptionDeleteACK_Messages",
+                            "objectInstance": "E2TAlpha_RICsubscriptionDeleteACK_Messages",
                             "counterId": "0034",
                             "type": "counter",
-                            "description": "E2T counter RICsubscriptionDeleteACK_Messages"
+                            "description": "E2TAlpha counter RICsubscriptionDeleteACK_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionDeleteFailure='Messages'}",
-                            "objectName": "E2T_RICsubscriptionDeleteFailure_Messages",
-                            "objectInstance": "E2T_RICsubscriptionDeleteFailure_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionDeleteFailure='Messages'}",
+                            "objectName": "E2TAlpha_RICsubscriptionDeleteFailure_Messages",
+                            "objectInstance": "E2TAlpha_RICsubscriptionDeleteFailure_Messages",
                             "counterId": "0035",
                             "type": "counter",
-                            "description": "E2T counter RICsubscriptionDeleteFailure_Messages"
+                            "description": "E2TAlpha counter RICsubscriptionDeleteFailure_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceQuery='Bytes'}",
-                            "objectName": "E2T_RICserviceQuery_Bytes",
-                            "objectInstance": "E2T_RICserviceQuery_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceQuery='Bytes'}",
+                            "objectName": "E2TAlpha_RICserviceQuery_Bytes",
+                            "objectInstance": "E2TAlpha_RICserviceQuery_Bytes",
                             "counterId": "0036",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICserviceQuery_Bytes"
+                            "description": "E2TAlpha counter E2T_RICserviceQuery_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICcontrolFailure='Messages'}",
-                            "objectName": "E2T_RICcontrolFailure_Messages",
-                            "objectInstance": "E2T_RICcontrolFailure_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICcontrolFailure='Messages'}",
+                            "objectName": "E2TAlpha_RICcontrolFailure_Messages",
+                            "objectInstance": "E2TAlpha_RICcontrolFailure_Messages",
                             "counterId": "0037",
                             "type": "counter",
-                            "description": "E2T counter RICcontrolFailure_Messages"
+                            "description": "E2TAlpha counter RICcontrolFailure_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionFailure='Messages'}",
-                            "objectName": "E2T_RICsubscriptionFailure_Messages",
-                            "objectInstance": "E2T_RICsubscriptionFailure_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionFailure='Messages'}",
+                            "objectName": "E2TAlpha_RICsubscriptionFailure_Messages",
+                            "objectInstance": "E2TAlpha_RICsubscriptionFailure_Messages",
                             "counterId": "0038",
                             "type": "counter",
-                            "description": "E2T counter RICsubscriptionFailure_Messages"
+                            "description": "E2TAlpha counter RICsubscriptionFailure_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetRequest='Messages'}",
-                            "objectName": "E2T_ResetRequest_Messages",
-                            "objectInstance": "E2T_ResetRequest_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetRequest='Messages'}",
+                            "objectName": "E2TAlpha_ResetRequest_Messages",
+                            "objectInstance": "E2TAlpha_ResetRequest_Messages",
                             "counterId": "0039",
                             "type": "counter",
-                            "description": "E2T counter ResetRequest_Messages"
+                            "description": "E2TAlpha counter ResetRequest_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionDeleteFailure='Bytes'}",
-                            "objectName": "E2T_RICsubscriptionDeleteFailure_Bytes",
-                            "objectInstance": "E2T_RICsubscriptionDeleteFailure_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionDeleteFailure='Bytes'}",
+                            "objectName": "E2TAlpha_RICsubscriptionDeleteFailure_Bytes",
+                            "objectInstance": "E2TAlpha_RICsubscriptionDeleteFailure_Bytes",
                             "counterId": "0040",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICsubscriptionDeleteFailure_Bytes"
+                            "description": "E2TAlpha counter E2T_RICsubscriptionDeleteFailure_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceUpdate='Bytes'}",
-                            "objectName": "E2T_RICserviceUpdate_Bytes",
-                            "objectInstance": "E2T_RICserviceUpdate_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceUpdate='Bytes'}",
+                            "objectName": "E2TAlpha_RICserviceUpdate_Bytes",
+                            "objectInstance": "E2TAlpha_RICserviceUpdate_Bytes",
                             "counterId": "0041",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICserviceUpdate_Bytes"
+                            "description": "E2TAlpha counter E2T_RICserviceUpdate_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ErrorIndication='Messages'}",
-                            "objectName": "E2T_ErrorIndication_Messages",
-                            "objectInstance": "E2T_ErrorIndication_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',ErrorIndication='Messages'}",
+                            "objectName": "E2TAlpha_ErrorIndication_Messages",
+                            "objectInstance": "E2TAlpha_ErrorIndication_Messages",
                             "counterId": "0042",
                             "type": "counter",
-                            "description": "E2T counter ErrorIndication_Messages"
+                            "description": "E2TAlpha counter ErrorIndication_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscription='Messages'}",
-                            "objectName": "E2T_RICsubscription_Messages",
-                            "objectInstance": "E2T_RICsubscription_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscription='Messages'}",
+                            "objectName": "E2TAlpha_RICsubscription_Messages",
+                            "objectInstance": "E2TAlpha_RICsubscription_Messages",
                             "counterId": "0043",
                             "type": "counter",
-                            "description": "E2T counter RICsubscription_Messages"
+                            "description": "E2TAlpha counter RICsubscription_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ErrorIndication='Bytes'}",
-                            "objectName": "E2T_ErrorIndication_Bytes",
-                            "objectInstance": "E2T_ErrorIndication_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',ErrorIndication='Bytes'}",
+                            "objectName": "E2TAlpha_ErrorIndication_Bytes",
+                            "objectInstance": "E2TAlpha_ErrorIndication_Bytes",
                             "counterId": "0044",
                             "type": "counter",
-                            "description": "E2T counter E2T_ErrorIndication_Bytes"
+                            "description": "E2TAlpha counter E2T_ErrorIndication_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionDelete='Bytes'}",
-                            "objectName": "E2T_RICsubscriptionDelete_Bytes",
-                            "objectInstance": "E2T_RICsubscriptionDelete_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionDelete='Bytes'}",
+                            "objectName": "E2TAlpha_RICsubscriptionDelete_Bytes",
+                            "objectInstance": "E2TAlpha_RICsubscriptionDelete_Bytes",
                             "counterId": "0045",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICsubscriptionDelete_Bytes"
+                            "description": "E2TAlpha counter E2T_RICsubscriptionDelete_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetRequest='Messages'}",
-                            "objectName": "E2T_ResetRequest_Messages",
-                            "objectInstance": "E2T_ResetRequest_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetRequest='Messages'}",
+                            "objectName": "E2TAlpha_ResetRequest_Messages",
+                            "objectInstance": "E2TAlpha_ResetRequest_Messages",
                             "counterId": "0046",
                             "type": "counter",
-                            "description": "E2T counter ResetRequest_Messages"
+                            "description": "E2TAlpha counter ResetRequest_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionDeleteACK='Bytes'}",
-                            "objectName": "E2T_RICsubscriptionDeleteACK_Bytes",
-                            "objectInstance": "E2T_RICsubscriptionDeleteACK_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionDeleteACK='Bytes'}",
+                            "objectName": "E2TAlpha_RICsubscriptionDeleteACK_Bytes",
+                            "objectInstance": "E2TAlpha_RICsubscriptionDeleteACK_Bytes",
                             "counterId": "0047",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICsubscriptionDeleteACK_Bytes"
+                            "description": "E2TAlpha counter E2T_RICsubscriptionDeleteACK_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICcontrol='Bytes'}",
-                            "objectName": "E2T_RICcontrol_Bytes",
-                            "objectInstance": "E2T_RICcontrol_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICcontrol='Bytes'}",
+                            "objectName": "E2TAlpha_RICcontrol_Bytes",
+                            "objectInstance": "E2TAlpha_RICcontrol_Bytes",
                             "counterId": "0048",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICcontrol_Bytes"
+                            "description": "E2TAlpha counter E2T_RICcontrol_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',SetupResponse='Messages'}",
-                            "objectName": "E2T_SetupResponse_Messages",
-                            "objectInstance": "E2T_SetupResponse_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',SetupResponse='Messages'}",
+                            "objectName": "E2TAlpha_SetupResponse_Messages",
+                            "objectInstance": "E2TAlpha_SetupResponse_Messages",
                             "counterId": "0049",
                             "type": "counter",
-                            "description": "E2T counter SetupResponse_Messages"
+                            "description": "E2TAlpha counter SetupResponse_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',ResetRequest='Bytes'}",
-                            "objectName": "E2T_ResetRequest_Bytes",
-                            "objectInstance": "E2T_ResetRequest_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',ResetRequest='Bytes'}",
+                            "objectName": "E2TAlpha_ResetRequest_Bytes",
+                            "objectInstance": "E2TAlpha_ResetRequest_Bytes",
                             "counterId": "0050",
                             "type": "counter",
-                            "description": "E2T counter E2T_ResetRequest_Bytes"
+                            "description": "E2TAlpha counter E2T_ResetRequest_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscriptionFailure='Bytes'}",
-                            "objectName": "E2T_RICsubscriptionFailure_Bytes",
-                            "objectInstance": "E2T_RICsubscriptionFailure_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscriptionFailure='Bytes'}",
+                            "objectName": "E2TAlpha_RICsubscriptionFailure_Bytes",
+                            "objectInstance": "E2TAlpha_RICsubscriptionFailure_Bytes",
                             "counterId": "0051",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICsubscriptionFailure_Bytes"
+                            "description": "E2TAlpha counter E2T_RICsubscriptionFailure_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICcontrol='Messages'}",
-                            "objectName": "E2T_RICcontrol_Messages",
-                            "objectInstance": "E2T_RICcontrol_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICcontrol='Messages'}",
+                            "objectName": "E2TAlpha_RICcontrol_Messages",
+                            "objectInstance": "E2TAlpha_RICcontrol_Messages",
                             "counterId": "0052",
                             "type": "counter",
-                            "description": "E2T counter RICcontrol_Messages"
+                            "description": "E2TAlpha counter RICcontrol_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceUpdateResponse='Bytes'}",
-                            "objectName": "E2T_RICserviceUpdateResponse_Bytes",
-                            "objectInstance": "E2T_RICserviceUpdateResponse_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceUpdateResponse='Bytes'}",
+                            "objectName": "E2TAlpha_RICserviceUpdateResponse_Bytes",
+                            "objectInstance": "E2TAlpha_RICserviceUpdateResponse_Bytes",
                             "counterId": "0053",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICserviceUpdateResponse_Bytes"
+                            "description": "E2TAlpha counter E2T_RICserviceUpdateResponse_Bytes"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICserviceQuery='Messages'}",
-                            "objectName": "E2T_RICserviceQuery_Messages",
-                            "objectInstance": "E2T_RICserviceQuery_Messages",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICserviceQuery='Messages'}",
+                            "objectName": "E2TAlpha_RICserviceQuery_Messages",
+                            "objectInstance": "E2TAlpha_RICserviceQuery_Messages",
                             "counterId": "0054",
                             "type": "counter",
-                            "description": "E2T counter RICserviceQuery_Messages"
+                            "description": "E2TAlpha counter RICserviceQuery_Messages"
                         },
                         {
-                            "name": "E2T{POD_NAME='e2term',RICsubscription='Bytes'}",
-                            "objectName": "E2T_RICsubscription_Bytes",
-                            "objectInstance": "E2T_RICsubscription_Bytes",
+                            "name": "E2TAlpha{POD_NAME='e2term',RICsubscription='Bytes'}",
+                            "objectName": "E2TAlpha_RICsubscription_Bytes",
+                            "objectInstance": "E2TAlpha_RICsubscription_Bytes",
                             "counterId": "0055",
                             "type": "counter",
-                            "description": "E2T counter E2T_RICsubscription_Bytes"
+                            "description": "E2TAlpha counter E2T_RICsubscription_Bytes"
                         }
                     ]
                 }
