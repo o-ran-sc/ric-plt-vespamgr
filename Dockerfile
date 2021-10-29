@@ -18,7 +18,7 @@
 #   platform project (RICP).
 #
 
-FROM golang:1.12 as gobuild
+FROM golang:1.16 as gobuild
 
 # Install utilities
 RUN apt update && apt install -y iputils-ping net-tools curl sudo
