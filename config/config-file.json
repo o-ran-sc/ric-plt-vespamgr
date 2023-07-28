@@ -67,7 +67,7 @@
             "configFile": "/etc/ves-agent/ves-agent.yaml",
             "hbInterval": "60s",
             "measInterval": "30s",
-            "prometheusAddr": "http://infra-cpro-server:80",
+            "prometheusAddr": "http://r4-infrastructure-prometheus-server.ricplt.svc.cluster.local:80",
             "alertManagerBindAddr": ":9095"
         },
         "collector": {
