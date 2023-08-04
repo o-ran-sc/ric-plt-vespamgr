@@ -71,8 +71,8 @@
             "alertManagerBindAddr": ":9095"
         },
         "collector": {
-            "primaryAddr": "smo-collector.nonrtric.svc.cluster.local",
-            "secondaryAddr": "smo-collector.nonrtric.svc.cluster.local",
+            "primaryAddr": "10.43.0.225",
+            "secondaryAddr": "10.43.0.225",
             "serverRoot": "",
             "primaryPort": 9999,
             "primaryUser": "sample1",

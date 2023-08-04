@@ -385,12 +385,12 @@
                             "description": "E2TAlpha counter E2T_RICsubscription_Bytes"
                         },
                         {
-                            "name": "sum by (instance, kubernetes_name) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_name!=''}[5m]))",
-                            "objectName": "Node_Exporter_cpu_seconds_total_usage",
-                            "objectInstance": "Node_Exporter_cpu_seconds_total_usage",
+                            "name": "label_replace((sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_node!=''}[5m])) / sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{instance!='', kubernetes_node!=''}[5m]))) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "objectName": "Node_cpu_utilization_percentage",
+                            "objectInstance": "Node_cpu_utilization_percentage",
                             "counterId": "0100",
                             "type": "counter",
-                            "description": "Node Exporter cpu_seconds_total_usage"
+                            "description": "Node counter Node_cpu_utilization_percentage"
                         }
                     ]
                 }
