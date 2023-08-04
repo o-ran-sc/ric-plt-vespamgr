@@ -71,10 +71,10 @@
             "alertManagerBindAddr": ":9095"
         },
         "collector": {
-            "primaryAddr": "pod-ves-simulator",
-            "secondaryAddr": "pod-ves-simulator",
+            "primaryAddr": "smo-collector.nonrtric.svc.cluster.local",
+            "secondaryAddr": "smo-collector.nonrtric.svc.cluster.local",
             "serverRoot": "",
-            "primaryPort": 8443,
+            "primaryPort": 9999,
             "primaryUser": "sample1",
             "primaryPassword": "sample1",
             "secure": false
