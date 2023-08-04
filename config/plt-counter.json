@@ -78,7 +78,7 @@
                             "objectInstance": "E2TAlpha_ErrorIndication_Messages",
                             "counterId": "0017",
                             "type": "counter",
-                            "description": "E2TAlpha counter ErrorIndication    _Messages"
+                            "description": "E2TAlpha counter ErrorIndication_Messages"
                         },
                         {
                             "name": "E2TAlpha{POD_NAME='e2term',ResetACK='Messages'}",
@@ -383,6 +383,14 @@
                             "counterId": "0055",
                             "type": "counter",
                             "description": "E2TAlpha counter E2T_RICsubscription_Bytes"
+                        },
+                        {
+                            "name": "sum by (instance, kubernetes_name) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_name!=''}[5m]))",
+                            "objectName": "Node_Exporter_cpu_seconds_total_usage",
+                            "objectInstance": "Node_Exporter_cpu_seconds_total_usage",
+                            "counterId": "0100",
+                            "type": "counter",
+                            "description": "Node Exporter cpu_seconds_total_usage"
                         }
                     ]
                 }
