@@ -1,7 +1,7 @@
 [
     {
-        "metadata": { },
-        "descriptor": { },
+        "metadata": {},
+        "descriptor": {},
         "config": {
             "local": {
                 "host": ":8080"
@@ -383,7 +383,15 @@
                             "counterId": "0055",
                             "type": "counter",
                             "description": "E2TAlpha counter E2T_RICsubscription_Bytes"
-                        },
+                        }
+                    ]
+                },
+                {
+                    "moId": "Performance",
+                    "measType": "Infra",
+                    "measId": "9002",
+                    "measInterval": "60",
+                    "metrics": [
                         {
                             "name": "label_replace((sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_node!=''}[5m])) / sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{instance!='', kubernetes_node!=''}[5m]))) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
                             "objectName": "Node_cpu_utilization_percentage",
@@ -397,5 +405,4 @@
             ]
         }
     }
-    
 ]

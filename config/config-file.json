@@ -71,7 +71,7 @@
             "alertManagerBindAddr": ":9095"
         },
         "collector": {
-            "primaryAddr": "10.43.0.225",
+            "primaryAddr": "ves-collector.smo.svc.cluster.local",
             "secondaryAddr": "10.43.0.225",
             "serverRoot": "",
             "primaryPort": 9999,
