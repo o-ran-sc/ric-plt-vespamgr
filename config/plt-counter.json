@@ -387,22 +387,54 @@
                     ]
                 },
                 {
-                    "moId": "Performance",
+                    "moId": "Nodes Resources",
                     "measType": "Infra",
                     "measId": "9002",
                     "measInterval": "60",
                     "metrics": [
                         {
                             "name": "label_replace((sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_node!=''}[5m])) / sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{instance!='', kubernetes_node!=''}[5m]))) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
-                            "objectName": "Node_cpu_utilization_percentage",
-                            "objectInstance": "Node_cpu_utilization_percentage",
+                            "objectName": "node_cpu_utilization_percentage",
+                            "objectInstance": "node_cpu_utilization_percentage",
                             "counterId": "0100",
                             "type": "counter",
-                            "description": "Node counter Node_cpu_utilization_percentage"
-                        }
+                            "description": "Node counter node_cpu_utilization_percentage"
+                        },
+                        {
+                            "name": "label_replace(sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode='idle', instance!='', kubernetes_node!=''}[5m])), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "objectName": "node_cpu_avaliabe",
+                            "objectInstance": "node_cpu_avaliabe",
+                            "counterId": "0101",
+                            "type": "counter",
+                            "description": "Node counter node_cpu_avaliabe"
+                        },
+                        {
+                            "name": "label_replace((sum by (instance, kubernetes_node) (node_memory_MemTotal_bytes{instance!='', kubernetes_node!=''} - node_memory_MemAvailable_bytes{instance!='', kubernetes_node!=''}) / sum by (instance, kubernetes_node) (node_memory_MemTotal_bytes{instance!='', kubernetes_node!=''})) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "objectName": "node_memory_utilization_percentage",
+                            "objectInstance": "node_memory_utilization_percentage",
+                            "counterId": "0102",
+                            "type": "counter",
+                            "description": "Node counter node_memory_utilization_percentage"
+                        },
+                        {
+                            "name": "label_replace(sum by (instance, kubernetes_node) (node_memory_MemAvailable_bytes{instance!='', kubernetes_node!=''}), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "objectName": "node_memory_available_bytes",
+                            "objectInstance": "node_memory_available_bytes",
+                            "counterId": "0103",
+                            "type": "counter",
+                            "description": "Node counter node_memory_available_bytes"
+                        },
+                        {
+                            "name": "label_replace(label_replace(sum by (job, instance) (avg_over_time(probe_http_duration_seconds{phase!='resolve', phase!='tls', phase!='processing'}[1m])), 'kubernetes_name', '$1', 'job', '(.*)'), 'instance', 'node$1', 'instance', 'blackbox-node([0-9]+)-prometheus.*')",
+                            "objectName": "latency_nodes_seconds_n_to_n",
+                            "objectInstance": "latency_nodes_seconds_n_to_n",
+                            "counterId": "0104",
+                            "type": "counter",
+                            "description": "Node counter latency_nodes_seconds_n_to_n"
+                        }  
                     ]
                 }
             ]
         }
     }
-]
+]      
