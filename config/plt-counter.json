@@ -393,7 +393,7 @@
                     "measInterval": "60",
                     "metrics": [
                         {
-                            "name": "label_replace((sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_node!=''}[5m])) / sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{instance!='', kubernetes_node!=''}[5m]))) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "name": "label_replace(label_replace((sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode!='idle', instance!='', kubernetes_node!=''}[5m])) / sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{instance!='', kubernetes_node!=''}[5m]))) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)'), 'instance', '$1', 'kubernetes_node', '(.*)')",
                             "objectName": "node_cpu_utilization_percentage",
                             "objectInstance": "node_cpu_utilization_percentage",
                             "counterId": "0100",
@@ -401,7 +401,7 @@
                             "description": "Node counter node_cpu_utilization_percentage"
                         },
                         {
-                            "name": "label_replace(sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode='idle', instance!='', kubernetes_node!=''}[5m])), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "name": "label_replace(label_replace(sum by (instance, kubernetes_node) (rate(node_cpu_seconds_total{mode='idle', instance!='', kubernetes_node!=''}[5m])), 'instance', '$1', 'kubernetes_node', '(.*)'), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
                             "objectName": "node_cpu_avaliabe",
                             "objectInstance": "node_cpu_avaliabe",
                             "counterId": "0101",
@@ -409,7 +409,7 @@
                             "description": "Node counter node_cpu_avaliabe"
                         },
                         {
-                            "name": "label_replace((sum by (instance, kubernetes_node) (node_memory_MemTotal_bytes{instance!='', kubernetes_node!=''} - node_memory_MemAvailable_bytes{instance!='', kubernetes_node!=''}) / sum by (instance, kubernetes_node) (node_memory_MemTotal_bytes{instance!='', kubernetes_node!=''})) * 100, 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "name": "label_replace(label_replace((sum by (instance, kubernetes_node) (node_memory_MemTotal_bytes{instance!='', kubernetes_node!=''} - node_memory_MemAvailable_bytes{instance!='', kubernetes_node!=''}) / sum by (instance, kubernetes_node) (node_memory_MemTotal_bytes{instance!='', kubernetes_node!=''})) * 100, 'instance', '$1', 'kubernetes_node', '(.*)'), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
                             "objectName": "node_memory_utilization_percentage",
                             "objectInstance": "node_memory_utilization_percentage",
                             "counterId": "0102",
@@ -417,7 +417,7 @@
                             "description": "Node counter node_memory_utilization_percentage"
                         },
                         {
-                            "name": "label_replace(sum by (instance, kubernetes_node) (node_memory_MemAvailable_bytes{instance!='', kubernetes_node!=''}), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "name": "label_replace(label_replace(sum by (instance, kubernetes_node) (node_memory_MemAvailable_bytes{instance!='', kubernetes_node!=''}), 'instance', '$1', 'kubernetes_node', '(.*)'), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
                             "objectName": "node_memory_available_bytes",
                             "objectInstance": "node_memory_available_bytes",
                             "counterId": "0103",
