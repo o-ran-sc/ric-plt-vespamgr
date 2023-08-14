@@ -433,6 +433,22 @@
                             "description": "Node counter latency_nodes_seconds_n_to_n"
                         }  
                     ]
+                },
+                {
+                    "moId": "E2 Nodes",
+                    "measType": "E2",
+                    "measId": "9002",
+                    "measInterval": "1",
+                    "metrics": [
+                        {
+                            "name": "label_replace(label_replace(rc_control_loop_latency_seconds, 'instance', '$1', 'app_kubernetes_io_instance', '(.*)'), 'kubernetes_name', '$1', 'kubernetes_node', '(.*)')",
+                            "objectName": "e2node_control_loop_latency_seconds",
+                            "objectInstance": "e2node_control_loop_latency_seconds",
+                            "counterId": "0200",
+                            "type": "counter",
+                            "description": "E2Node counter e2node_control_loop_latency_seconds"
+                        }
+                    ]
                 }
             ]
         }
