@@ -387,8 +387,8 @@
                     ]
                 },
                 {
-                    "moId": "Nodes Resources",
-                    "measType": "Infra",
+                    "moId": "K8S Nodes Resources",
+                    "measType": "k8snodesresources",
                     "measId": "9002",
                     "measInterval": "60",
                     "metrics": [
@@ -436,7 +436,7 @@
                 },
                 {
                     "moId": "E2 Nodes",
-                    "measType": "E2",
+                    "measType": "e2nodes",
                     "measId": "9002",
                     "measInterval": "1",
                     "metrics": [
