@@ -449,6 +449,46 @@
                             "description": "E2Node counter e2node_control_loop_latency_seconds"
                         }
                     ]
+                },
+                {
+                    "moId": "UEs",
+                    "measType": "ues",
+                    "measId": "9004",
+                    "measInterval": "1",
+                    "metrics": [
+                        {
+                            "name": "label_replace(label_replace(e2sm_rc_report_style4_rrc_state, 'instance', '$1', 'imsi', '(.*)'), 'kubernetes_name', '$1', 'gnbid', '(.*)')",
+                            "objectName": "e2sm_rc_report_style4_rrc_state",
+                            "objectInstance": "e2sm_rc_report_style4_rrc_state",
+                            "counterId": "0300",
+                            "type": "counter",
+                            "description": "UEs counter e2sm_rc_report_style4_rrc_state"
+                        },
+                        {
+                            "name": "label_replace(label_replace(e2sm_rc_report_style4_rsrp, 'instance', '$1', 'imsi', '(.*)'), 'kubernetes_name', '$1', 'gnbid', '(.*)')",
+                            "objectName": "e2sm_rc_report_style4_rsrp",
+                            "objectInstance": "e2sm_rc_report_style4_rsrp",
+                            "counterId": "0301",
+                            "type": "counter",
+                            "description": "UEs counter e2sm_rc_report_style4_rsrp"
+                        },
+                        {
+                            "name": "label_replace(label_replace(e2sm_rc_report_style4_rsrq, 'instance', '$1', 'imsi', '(.*)'), 'kubernetes_name', '$1', 'gnbid', '(.*)')",
+                            "objectName": "e2sm_rc_report_style4_rsrq",
+                            "objectInstance": "e2sm_rc_report_style4_rsrq",
+                            "counterId": "0302",
+                            "type": "counter",
+                            "description": "UEs counter e2sm_rc_report_style4_rsrq"
+                        },
+                        {
+                            "name": "label_replace(label_replace(e2sm_rc_report_style4_sinr, 'instance', '$1', 'imsi', '(.*)'), 'kubernetes_name', '$1', 'gnbid', '(.*)')",
+                            "objectName": "e2sm_rc_report_style4_sinr",
+                            "objectInstance": "e2sm_rc_report_style4_sinr",
+                            "counterId": "0303",
+                            "type": "counter",
+                            "description": "UEs counter e2sm_rc_report_style4_sinr"
+                        }
+                    ]
                 }
             ]
         }
