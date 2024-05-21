@@ -70,7 +70,7 @@ func (v *VespaMgr) BasicVespaConf() VESAgentConfiguration {
 			VNFName:             v.getVNFName(),
 			ReportingEntityName: "Vespa",
 			ReportingEntityID:   v.readSystemUUID(),
-			MaxSize:             2000000,
+			MaxSize:             100000000,
 			NfNamingCode:        v.getNFNamingCode(),
 			NfcNamingCodes:      []NfcNamingCode{},
 			RetryInterval:       time.Second * 5,
