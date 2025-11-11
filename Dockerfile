@@ -18,7 +18,7 @@
 #   platform project (RICP).
 #
 
-FROM golang:1.16 as gobuild
+FROM golang:1.22 as gobuild
 
 # Install utilities
 RUN apt update && apt install -y iputils-ping net-tools curl sudo
@@ -31,7 +31,7 @@ WORKDIR $GOPATH/src/VESPA
 RUN git clone -b v0.3.0 https://github.com/nokia/ONAP-VESPA.git $GOPATH/src/VESPA
 
 RUN GO111MODULE=on go mod download
-ENV GOLANG_VERSION 1.16
+ENV GOLANG_VERSION 1.22.12
 RUN wget --quiet https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz \
        && tar xvzf go$GOLANG_VERSION.linux-amd64.tar.gz -C /usr/local
 
@@ -49,7 +49,7 @@ WORKDIR /go/src/vespamgr
 RUN ./build_vesmgr.sh
 
 # Final, executable and deployable container
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 RUN mkdir -p /etc/ves-agent
 
